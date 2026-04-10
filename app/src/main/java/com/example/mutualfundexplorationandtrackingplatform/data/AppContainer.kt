@@ -24,6 +24,6 @@ class AppDataContainer(private val context: Context) : AppContainer {
     }
 
     override val mutualFundRepository: MutualFundRepository by lazy {
-        MFRepository(MutualFundDatabase.getDatabase(this).mutualFundDAO(), retrofitService)
+        MFRepository(MutualFundDatabase.getDatabase(context).mutualFundDAO(), retrofitService)
     }
 }

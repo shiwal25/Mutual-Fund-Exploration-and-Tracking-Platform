@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Mutual Fund Exploration and Tracking Platform</string>
+    <string name="back_button">Back Button</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.example.mutualfundexplorationandtrackingplatform.data
 
+import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -12,7 +13,7 @@ abstract class MutualFundDatabase : RoomDatabase() {
         @Volatile
         private var Instance: MutualFundDatabase? = null
 
-        fun getDatabase(context: AppDataContainer): MutualFundDatabase{
+        fun getDatabase(context: Context): MutualFundDatabase{
             return Instance?: synchronized(this){
                 Room.databaseBuilder(context, MutualFundDatabase::class.java, "mutualFund_database")
                     .fallbackToDestructiveMigration().build()
