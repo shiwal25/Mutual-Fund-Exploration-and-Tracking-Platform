@@ -1,5 +1,6 @@
 package com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
@@ -37,10 +38,17 @@ class ExploreViewModel(    private val mutualFundRepository: MutualFundRepositor
         mutualFundRepository.observeFundByschemeCode(schemeCode)
             .map { entity -> entity.toDetailUiState() }
 
-    private fun MutualFundDetail?.toDetailUiState(): DetailUiState = when {
-        this == null              -> DetailUiState.Loading
-        !detailsIsFetched           -> DetailUiState.Loading
-        schemeCode != null && schemeName != null -> DetailUiState.Loaded(schemeCode, schemeName, latestNav)
-        else                      -> DetailUiState.Error
+    private fun MutualFundDetail?.toDetailUiState(): DetailUiState {
+        Log.d("ViewModel", "toDetailUiState: this=$this, detailsIsFetched=${this?.detailsIsFetched}, latestNav=${this?.latestNav}")  // ADD THIS
+
+        return when {
+            this == null              -> DetailUiState.Loading
+            !detailsIsFetched         -> DetailUiState.Loading
+            schemeCode != null && schemeName != null -> {
+                Log.d("ViewModel", "Returning Loaded state with nav=$latestNav")  // ADD THIS
+                DetailUiState.Loaded(schemeCode, schemeName, latestNav)
+            }
+            else                      -> DetailUiState.Error
+        }
     }
 }

@@ -7,16 +7,32 @@ fun MutualFundDTO.toEntity(): MutualFundDetail {
     return MutualFundDetail(
         schemeCode = schemeCode,
         schemeName = schemeName,
-        fundHouse= fundHouse,
-        schemeType = schemeType,
-        schemeCategory= schemeCategory,
-        latestNav =latestNav,
-        latestNavDate= latestNavDate,
-        isInGrowth= isInGrowth,
-        isInDivReinvestment =isInDivReinvestment,
+        isInGrowth = isInGrowth,
+        isInDivReinvestment = isInDivReinvestment,
+        fundHouse = null,
+        schemeType = null,
+        schemeCategory = null,
+        latestNav = null,
+        latestNavDate = null,
+        detailsIsFetched = false  // Important!
     )
 }
 
 fun List<MutualFundDTO>.toEntityList(): List<MutualFundDetail> {
     return this.map { it.toEntity() }
+}
+
+
+fun MutualFundDetail.toDTO(): MutualFundDTO {
+    return MutualFundDTO(
+        schemeCode = schemeCode,
+        schemeName = schemeName,
+        isInGrowth = isInGrowth,
+        isInDivReinvestment = isInDivReinvestment,
+        fundHouse = fundHouse,
+        schemeType = schemeType,
+        schemeCategory = schemeCategory,
+        latestNav = latestNav,
+        latestNavDate = latestNavDate
+    )
 }

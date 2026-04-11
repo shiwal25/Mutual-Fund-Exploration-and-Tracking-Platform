@@ -1,6 +1,7 @@
 package com.example.mutualfundexplorationandtrackingplatform.data.remote.api
 
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundDTO
+import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundResponseDTO
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -16,5 +17,5 @@ interface MutualFundApiService {
     @GET("mf/{scheme_code}/latest")
     suspend fun getFundDetails(
         @Path("scheme_code") schemeCode: Int?
-    ): MutualFundDTO
+    ): MutualFundResponseDTO
 }

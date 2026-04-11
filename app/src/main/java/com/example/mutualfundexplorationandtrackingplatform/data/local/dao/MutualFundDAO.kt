@@ -45,4 +45,8 @@ interface MutualFundDAO {
     @Query("SELECT * FROM mutual_funds WHERE schemeCode = :schemeCode")
     fun observeFundByScheme(schemeCode: Int?): Flow<MutualFundDetail?>
 
+
+    @Query("SELECT * FROM mutual_funds LIMIT :limit OFFSET :offset")
+    suspend fun getAllFunds(limit: Int, offset: Int): List<MutualFundDetail>
+
 }
