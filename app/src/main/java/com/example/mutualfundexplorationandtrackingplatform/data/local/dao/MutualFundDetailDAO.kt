@@ -1,10 +1,10 @@
-package com.example.mutualfundexplorationandtrackingplatform.data.dao
+package com.example.mutualfundexplorationandtrackingplatform.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.mutualfundexplorationandtrackingplatform.data.MutualFundDetail
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
 import kotlinx.coroutines.flow.Flow
 
 @Dao

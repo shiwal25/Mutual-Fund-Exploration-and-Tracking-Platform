@@ -1,8 +1,7 @@
-package com.example.mutualfundexplorationandtrackingplatform.data
+package com.example.mutualfundexplorationandtrackingplatform.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.serialization.Serializable
 
 @Entity(tableName = "mutual_funds")
 data class MutualFundDetail(

@@ -5,11 +5,11 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
-import com.example.mutualfundexplorationandtrackingplatform.data.FundRemoteKey
-import com.example.mutualfundexplorationandtrackingplatform.data.MutualFund
-import com.example.mutualfundexplorationandtrackingplatform.data.MutualFundDatabase
-import com.example.mutualfundexplorationandtrackingplatform.data.toEntity
-import com.example.mutualfundexplorationandtrackingplatform.network.MutualFundApiService
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.FundRemoteKey
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFund
+import com.example.mutualfundexplorationandtrackingplatform.data.local.MutualFundDatabase
+import com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper.toEntity
+import com.example.mutualfundexplorationandtrackingplatform.data.remote.api.MutualFundApiService
 import kotlinx.coroutines.delay
 import retrofit2.HttpException
 import java.io.IOException
@@ -84,7 +84,6 @@ class FundRemoteMediator(
     }
 }
 
-// Exponential backoff helper
 suspend fun <T> retryWithBackoff(
     maxRetries: Int = 3,
     initialDelay: Long = 500L,

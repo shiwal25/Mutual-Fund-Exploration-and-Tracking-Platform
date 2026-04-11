@@ -1,4 +1,4 @@
-package com.example.mutualfundexplorationandtrackingplatform.network
+package com.example.mutualfundexplorationandtrackingplatform.data.remote.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

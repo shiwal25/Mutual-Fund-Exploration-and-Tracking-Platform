@@ -1,7 +1,7 @@
-package com.example.mutualfundexplorationandtrackingplatform.network
+package com.example.mutualfundexplorationandtrackingplatform.data.remote.api
 
-import com.example.mutualfundexplorationandtrackingplatform.data.MutualFund
-import kotlinx.coroutines.flow.Flow
+import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundDTO
+import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundDetailDTO
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

@@ -1,8 +1,8 @@
 package com.example.mutualfundexplorationandtrackingplatform
 
 import android.app.Application
-import com.example.mutualfundexplorationandtrackingplatform.data.AppContainer
-import com.example.mutualfundexplorationandtrackingplatform.data.AppDataContainer
+import com.example.mutualfundexplorationandtrackingplatform.di.AppContainer
+import com.example.mutualfundexplorationandtrackingplatform.di.AppDataContainer
 
 class MutualFundApplication : Application() {
     lateinit var container: AppContainer

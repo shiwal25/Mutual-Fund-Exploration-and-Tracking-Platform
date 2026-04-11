@@ -1,17 +1,22 @@
-package com.example.mutualfundexplorationandtrackingplatform.data
+package com.example.mutualfundexplorationandtrackingplatform.data.repository
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.room.withTransaction
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFund
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.NavHistory
+import com.example.mutualfundexplorationandtrackingplatform.data.local.MutualFundDatabase
 import com.example.mutualfundexplorationandtrackingplatform.data.paging.FundRemoteMediator
 import com.example.mutualfundexplorationandtrackingplatform.data.paging.retryWithBackoff
-import com.example.mutualfundexplorationandtrackingplatform.network.MutualFundApiService
+import com.example.mutualfundexplorationandtrackingplatform.data.remote.api.MutualFundApiService
 import kotlinx.coroutines.flow.Flow
 
 class MFRepository(private val mutualFundDatabase: MutualFundDatabase,
-                   private val mutualFundApiService: MutualFundApiService) : MutualFundRepository{
+                   private val mutualFundApiService: MutualFundApiService
+) : MutualFundRepository {
 
     @OptIn(ExperimentalPagingApi::class)
     override fun getFundsPager(): Flow<PagingData<MutualFund>> = Pager(

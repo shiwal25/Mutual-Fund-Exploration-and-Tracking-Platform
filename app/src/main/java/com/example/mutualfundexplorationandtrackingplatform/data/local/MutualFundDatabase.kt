@@ -1,13 +1,17 @@
-package com.example.mutualfundexplorationandtrackingplatform.data
+package com.example.mutualfundexplorationandtrackingplatform.data.local
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.mutualfundexplorationandtrackingplatform.data.dao.FundRemoteKeyDAO
-import com.example.mutualfundexplorationandtrackingplatform.data.dao.MutualFundDAO
-import com.example.mutualfundexplorationandtrackingplatform.data.dao.MutualFundDetailDAO
-import com.example.mutualfundexplorationandtrackingplatform.data.dao.NavHistoryDAO
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.FundRemoteKey
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFund
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.NavHistory
+import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.FundRemoteKeyDAO
+import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.MutualFundDAO
+import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.MutualFundDetailDAO
+import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.NavHistoryDAO
 
 @Database(entities = [
     MutualFund::class,
