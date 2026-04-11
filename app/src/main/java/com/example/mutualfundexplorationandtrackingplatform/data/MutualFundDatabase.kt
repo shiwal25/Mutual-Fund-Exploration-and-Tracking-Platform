@@ -4,10 +4,22 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.mutualfundexplorationandtrackingplatform.data.dao.FundRemoteKeyDAO
+import com.example.mutualfundexplorationandtrackingplatform.data.dao.MutualFundDAO
+import com.example.mutualfundexplorationandtrackingplatform.data.dao.MutualFundDetailDAO
+import com.example.mutualfundexplorationandtrackingplatform.data.dao.NavHistoryDAO
 
-@Database(entities = [MutualFund::class], version = 1, exportSchema = false)
+@Database(entities = [
+    MutualFund::class,
+    MutualFundDetail::class,
+    NavHistory::class,
+    FundRemoteKey::class],
+    version = 1, exportSchema = false)
 abstract class MutualFundDatabase : RoomDatabase() {
     abstract fun mutualFundDAO(): MutualFundDAO
+    abstract fun mutualFundDetailDAO(): MutualFundDetailDAO
+    abstract fun navHistoryDAO(): NavHistoryDAO
+    abstract fun fundRemoteKeyDAO(): FundRemoteKeyDAO
 
     companion object{
         @Volatile

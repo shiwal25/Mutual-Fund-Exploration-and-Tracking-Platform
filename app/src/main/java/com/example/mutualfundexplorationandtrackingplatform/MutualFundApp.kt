@@ -24,8 +24,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
@@ -44,6 +47,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -53,6 +57,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -156,12 +161,14 @@ fun MutualFundApp(
 
             composable (MutualFundAppScreen.AllFunds.name) {
                 ListScreen(
+//                    funds = List<MutualFund>,
+                    {},
                     modifier = Modifier.padding(innerPadding),
                 )
             }
 
             composable (MutualFundAppScreen.Analysis.name) {
-                AnalysisScreen(
+                AnalysisScreen("","","","","",
                     modifier = Modifier.padding(innerPadding),
                 )
             }
@@ -180,12 +187,14 @@ fun MutualFundApp(
 
             composable (MutualFundAppScreen.Funds.name) {
                 ListScreen(
+                    {},
                     modifier = Modifier.padding(innerPadding),
                 )
             }
 
             composable (MutualFundAppScreen.Portfolio.name) {
                 ListScreen(
+                    {},
                     modifier = Modifier.padding(innerPadding),
                 )
             }
@@ -238,17 +247,137 @@ fun ExploreScreen(modifier:Modifier,
     }
 
 @Composable
-fun ListScreen(modifier:Modifier){
-    /*TODO common composable for each fund*/
+fun ListScreen(
+//    funds: List<MutualFund>,
+    onClick: () -> Unit,
+    modifier:Modifier
+){
+    LazyColumn() {
+//        items(items = funds) {
+//            item -> listScreenItem(item, {})
+//        }
+    }
 }
 
 @Composable
-fun AnalysisScreen(modifier:Modifier){
-    /*TODO Poora alag hi banega*/
+fun AnalysisScreen(
+    fundName: String,
+    category: String,
+    navValue: String,
+    growthPercentage: String,
+    description: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+    ) {
+        Text(
+            text = fundName,
+            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+            color = Color.Black
+        )
+        Text(
+            text = "Category: $category",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(verticalAlignment = Alignment.Bottom) {
+            Text(
+                text = "NAV $navValue",
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "↑ $growthPercentage",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color(0xFF4CAF50)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .border(BorderStroke(1.dp, Color.Black), RoundedCornerShape(4.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Graph Placeholder", color = Color.LightGray)
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            listOf("6M", "1Y", "ALL").forEach { period ->
+                Text(
+                    text = period,
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = if (period == "1Y") FontWeight.Bold else FontWeight.Normal,
+                        textDecoration = if (period == "1Y") TextDecoration.Underline else null
+                    ),
+                    color = if (period == "1Y") Color.Black else Color.Gray
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = description,
+            style = MaterialTheme.typography.bodyMedium,
+            lineHeight = 20.sp,
+            color = Color.Black
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+        HorizontalDivider(thickness = 1.dp, color = Color.Black)
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AnalysisStatItem("Type", "Growth", Modifier.weight(1f))
+            VerticalDivider(modifier = Modifier.height(40.dp), color = Color.Black)
+            AnalysisStatItem("Size", "₹35k Cr", Modifier.weight(1f))
+            VerticalDivider(modifier = Modifier.height(40.dp), color = Color.Black)
+            AnalysisStatItem("NAV", navValue, Modifier.weight(1f))
+        }
+    }
+}
+
+@Composable
+fun AnalysisStatItem(label: String, value: String, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = label, style = MaterialTheme.typography.labelLarge, color = Color.Gray)
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            color = Color.Black
+        )
+    }
 }
 
 @Composable
 fun SearchScreen(modifier: Modifier){
+
     /*TODO one composable for search results answers*/
 }
 
@@ -415,11 +544,69 @@ fun FundCard(
 //@Preview(showBackground = true, showSystemUi = true)
 //@Composable
 //fun ExploreFundsPreview() {
-//    FundCard({}, Modifier)
+////    FundCard({}, Modifier)
+//    listScreenItem("ICICI Prudential", "210.18", {})
 //}
 
 
 @Composable
-fun listScreenItem(){
-
+fun listScreenItem(
+    data: MutualFund,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+){
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .border(BorderStroke(2.dp, Color.Black), RoundedCornerShape(4.dp))
+            .clickable(onClick = onClick)
+            .padding(12.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Surface(
+                modifier = Modifier
+                    .size(48.dp)
+                    .border(BorderStroke(2.dp, Color.Black), CircleShape),
+                shape = CircleShape,
+                color = Color.White
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "AMC",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Black
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+//            Column {
+//                Text(
+//                    text = data.name,
+//                    style = MaterialTheme.typography.titleMedium.copy(
+//                        fontWeight = FontWeight.Bold,
+//                        fontSize = 18.sp
+//                    ),
+//                    color = Color.Black
+//                )
+//
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Text(
+//                        text = "NAV: ",
+//                        style = MaterialTheme.typography.bodyMedium,
+//                        color = Color.Gray
+//                    )
+//                    Text(
+//                        text = data.name,
+//                        style = MaterialTheme.typography.bodyLarge.copy(
+//                            fontWeight = FontWeight.SemiBold
+//                        ),
+//                        color = Color.Black
+//                    )
+//                }
+//            }
+        }
+    }
 }
