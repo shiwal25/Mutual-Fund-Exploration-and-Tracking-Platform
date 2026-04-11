@@ -5,10 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.MutualFundDAO
-import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFund
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
 
-@Database(entities = [MutualFund::class,],
-    version = 1, exportSchema = false)
+@Database(entities = [MutualFundDetail::class,],
+    version = 2, exportSchema = false)
 abstract class MutualFundDatabase : RoomDatabase() {
     abstract fun mutualFundDAO(): MutualFundDAO
 

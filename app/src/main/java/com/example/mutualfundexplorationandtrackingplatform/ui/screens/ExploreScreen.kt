@@ -20,9 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ExploreViewModel
 
 @Composable
-fun ExploreScreen(modifier:Modifier,
+fun ExploreScreen(
+    modifier:Modifier,
                   onClick: () -> Unit
 ) {
     Column(modifier.padding(4.dp)) {

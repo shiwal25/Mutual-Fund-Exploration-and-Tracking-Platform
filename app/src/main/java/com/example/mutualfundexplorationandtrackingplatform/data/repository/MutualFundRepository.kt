@@ -1,12 +1,15 @@
 package com.example.mutualfundexplorationandtrackingplatform.data.repository
 
-import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFund
+import androidx.paging.PagingData
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
+import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundDTO
 import kotlinx.coroutines.flow.Flow
 
 interface MutualFundRepository {
 
-    fun getAllFundsStream(): Flow<List<MutualFund>>
+    val mutalFundPagingFlow: Flow<PagingData<MutualFundDTO>>
 
-    suspend fun refreshFunds()
+    suspend fun fetchAndCacheDetails(schemeCode: Int?): Result<MutualFundDetail>
 
+    fun observeFundByschemeCode(schemeCode: Int?): Flow<MutualFundDetail?>
 }

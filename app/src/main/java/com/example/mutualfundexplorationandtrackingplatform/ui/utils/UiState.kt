@@ -1,8 +1,7 @@
 package com.example.mutualfundexplorationandtrackingplatform.ui.utils
 
-sealed class UiState<out T> {
-    object Loading : UiState<Nothing>()
-    object Empty : UiState<Nothing>()
-    data class Success<T>(val data: T) : UiState<T>()
-    data class Error(val message: String) : UiState<Nothing>()
+sealed interface DetailUiState {
+    data object Loading : DetailUiState
+    data class Loaded(val schemeCode: Int, val schemeName: String, val latestNav: String?) : DetailUiState
+    data object Error : DetailUiState
 }

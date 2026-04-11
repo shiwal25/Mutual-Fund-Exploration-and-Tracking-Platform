@@ -22,11 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFund
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
 
 @Composable
 fun FundCard(
-    data: MutualFund,
+    data: MutualFundDetail,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

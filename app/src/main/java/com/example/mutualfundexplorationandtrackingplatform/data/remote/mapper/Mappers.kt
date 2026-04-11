@@ -1,10 +1,10 @@
 package com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper
 
-import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFund
-import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundDetailDTO
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
+import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundDTO
 
-fun MutualFundDetailDTO.toEntity(): MutualFund {
-    return MutualFund(
+fun MutualFundDTO.toEntity(): MutualFundDetail {
+    return MutualFundDetail(
         schemeCode = schemeCode,
         schemeName = schemeName,
         fundHouse= fundHouse,
@@ -17,6 +17,6 @@ fun MutualFundDetailDTO.toEntity(): MutualFund {
     )
 }
 
-fun List<MutualFundDetailDTO>.toEntityList(): List<MutualFund> {
+fun List<MutualFundDTO>.toEntityList(): List<MutualFundDetail> {
     return this.map { it.toEntity() }
 }

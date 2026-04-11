@@ -143,7 +143,7 @@ fun MutualFundApp(
 
             composable (MutualFundAppScreen.AllFunds.name) {
                 ListScreen(
-//                    funds = List<MutualFund>,
+                    viewModel = exploreViewModel,
                     {},
                     modifier = Modifier.padding(innerPadding),
                 )
@@ -168,17 +168,17 @@ fun MutualFundApp(
             }
 
             composable (MutualFundAppScreen.Funds.name) {
-                ListScreen(
-                    {},
-                    modifier = Modifier.padding(innerPadding),
-                )
+//                ListScreen(
+//                    {},
+//                    modifier = Modifier.padding(innerPadding),
+//                )
             }
 
             composable (MutualFundAppScreen.Portfolio.name) {
-                ListScreen(
-                    {},
-                    modifier = Modifier.padding(innerPadding),
-                )
+//                ListScreen(
+//                    {},
+//                    modifier = Modifier.padding(innerPadding),
+//                )
             }
         }
     }

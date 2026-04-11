@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,18 +17,36 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFund
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.mutualfundexplorationandtrackingplatform.ui.utils.DetailUiState
+import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ExploreViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun listScreenItem(
-    data: MutualFund,
+    schemeCode: Int?,
+    schemeName: String?,
+    viewModel: ExploreViewModel,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
+    val detailState by viewModel
+        .getDetailFlow(schemeCode)
+        .collectAsStateWithLifecycle(initialValue = DetailUiState.Loading)
+
+    LaunchedEffect(schemeCode) {
+        delay(300L)
+        viewModel.requestDetail(schemeCode)
+    }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -55,31 +74,53 @@ fun listScreenItem(
                 }
             }
             Spacer(modifier = Modifier.width(8.dp))
-//            Column {
-//                Text(
-//                    text = data.name,
-//                    style = MaterialTheme.typography.titleMedium.copy(
-//                        fontWeight = FontWeight.Bold,
-//                        fontSize = 18.sp
-//                    ),
-//                    color = Color.Black
-//                )
-//
-//                Row(verticalAlignment = Alignment.CenterVertically) {
-//                    Text(
-//                        text = "NAV: ",
-//                        style = MaterialTheme.typography.bodyMedium,
-//                        color = Color.Gray
-//                    )
-//                    Text(
-//                        text = data.name,
-//                        style = MaterialTheme.typography.bodyLarge.copy(
-//                            fontWeight = FontWeight.SemiBold
-//                        ),
-//                        color = Color.Black
-//                    )
-//                }
-//            }
+            Column {
+                if (schemeName != null) {
+                    Text(
+                        text = schemeName,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        ),
+                        color = Color.Black
+                    )
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "NAV: ",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray
+                    )
+                    when (val state = detailState) {
+                        is DetailUiState.Loading -> {
+                            ShimmerBox(width = 160.dp, height = 14.dp)
+                        }
+                        is DetailUiState.Loaded -> {
+                            state.latestNav?.let {
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme
+                                        .typography
+                                        .bodyLarge
+                                        .copy(
+                                            fontWeight = FontWeight.SemiBold
+                                        ),
+                                    color = Color.Black
+                                )
+                            }
+                        }
+                        is DetailUiState.Error -> {
+                            Text(
+                                text     = "-",
+                                fontSize = 14.sp,
+                                color    = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+
+                }
+            }
         }
     }
 }

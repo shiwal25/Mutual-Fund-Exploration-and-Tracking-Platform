@@ -38,6 +38,16 @@ android {
     buildFeatures {
         compose = true
     }
+
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/INDEX.LIST",
+                "META-INF/DEPENDENCIES",
+                "META-INF/io.netty.versions.properties"
+            )
+        }
+    }
 }
 
 dependencies {
@@ -54,6 +64,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.paging.common)
     implementation(libs.androidx.benchmark.common)
+    implementation(libs.firebase.appdistribution.gradle)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -83,4 +94,8 @@ dependencies {
 
     implementation("androidx.room:room-paging:2.8.4")
     implementation("androidx.paging:paging-runtime-ktx:3.4.2")
+    implementation("androidx.paging:paging-compose:3.4.2")
+
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+
 }

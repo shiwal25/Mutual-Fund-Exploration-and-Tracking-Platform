@@ -16,11 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFund
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
 
 @Composable
 fun ExploreScreenFunds(
-    funds: List<MutualFund>,
+    funds: List<MutualFundDetail>,
     title:String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier

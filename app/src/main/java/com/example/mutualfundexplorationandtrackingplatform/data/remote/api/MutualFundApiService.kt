@@ -1,13 +1,20 @@
 package com.example.mutualfundexplorationandtrackingplatform.data.remote.api
 
-import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundDetailDTO
+import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundDTO
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface MutualFundApiService {
 
-    @GET("mf/latest")
-    suspend fun getLatestMutualFunds(): List<MutualFundDetailDTO>
+    @GET("mf")
+    suspend fun getMutualFunds(
+        @Query("limit")  limit: Int  = 100,
+        @Query("offset") offset: Int = 0
+    ): List<MutualFundDTO>
 
+    @GET("mf/{scheme_code}/latest")
+    suspend fun getFundDetails(
+        @Path("scheme_code") schemeCode: Int?
+    ): MutualFundDTO
 }
