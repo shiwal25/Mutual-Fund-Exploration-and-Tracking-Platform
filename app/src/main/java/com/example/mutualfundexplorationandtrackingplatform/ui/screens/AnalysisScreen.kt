@@ -28,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mutualfundexplorationandtrackingplatform.AnalysisStatItem
+import com.example.mutualfundexplorationandtrackingplatform.ui.components.AnalysisStatItem
 
 @Composable
 fun AnalysisScreen(

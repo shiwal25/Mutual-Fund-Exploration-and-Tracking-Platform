@@ -24,7 +24,7 @@ class FundRemoteMediator(
     private val keyDao = db.fundRemoteKeyDAO()
 
     override suspend fun initialize(): InitializeAction {
-        // Refresh if data is older than 1 hour
+        // refreshing data older than 1hour
         val oldestKey = keyDao.getKey(0)
         return if (oldestKey == null) InitializeAction.LAUNCH_INITIAL_REFRESH
         else InitializeAction.SKIP_INITIAL_REFRESH
