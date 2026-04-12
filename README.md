@@ -126,3 +126,8 @@ Mutual-Fund-Exploration-and-Tracking-Platform/
 │       │   │   ├── SearchViewModel.kt
 │       │   │   ├── ViewModelFactory.kt
 │       │   │   └── WatchlistViewModel.kt
+```
+
+## [App APK]([https://example.com](https://drive.google.com/file/d/1XDcQ8NCS8qV30WAuopiciG5eMqXu9o0J/view?usp=sharing))
+
+## [Demo Video](https://example.com)
