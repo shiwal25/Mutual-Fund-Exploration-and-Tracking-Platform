@@ -1,6 +1,5 @@
 package com.example.mutualfundexplorationandtrackingplatform
 
-import android.R.attr.type
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,17 +40,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.WatchListDao
 import com.example.mutualfundexplorationandtrackingplatform.ui.components.ViewAllButton
 import com.example.mutualfundexplorationandtrackingplatform.ui.screens.AnalysisScreen
 import com.example.mutualfundexplorationandtrackingplatform.ui.screens.CategoryListScreen
 import com.example.mutualfundexplorationandtrackingplatform.ui.screens.ExploreScreen
 import com.example.mutualfundexplorationandtrackingplatform.ui.screens.ListScreen
+import com.example.mutualfundexplorationandtrackingplatform.ui.screens.PortfolioScreen
 import com.example.mutualfundexplorationandtrackingplatform.ui.screens.SearchScreen
 import com.example.mutualfundexplorationandtrackingplatform.ui.screens.WatchListScreen
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ExploreViewModel
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ViewModelFactory
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.WatchlistViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.material.icons.filled.Bookmark
 
 enum class MutualFundAppScreen (val route: String){
     Explore("explore"),
@@ -81,10 +81,13 @@ fun MutualFundApp(
     } catch (e: IllegalArgumentException) {
         MutualFundAppScreen.Explore
     }
-    val appBarTitle = if (currentScreen == MutualFundAppScreen.CategoryAllFunds) {
-        backStackEntry?.arguments?.getString("categoryName") ?: "All Funds"
-    } else {
-        currentScreen.name
+    val appBarTitle = when (currentScreen) {
+        MutualFundAppScreen.CategoryAllFunds -> {
+            backStackEntry?.arguments?.getString("categoryName") ?: "All Funds"
+        }
+        MutualFundAppScreen.WatchList -> "My Portfolios"
+        MutualFundAppScreen.AllFunds -> "All  Funds"
+        else -> currentScreen.name
     }
     val context = LocalContext.current
     val app = context.applicationContext as MutualFundApplication
@@ -99,6 +102,15 @@ fun MutualFundApp(
         factory = ViewModelFactory(mutualFundRepository, watchListDao)
     )
 
+    val selectedFund by exploreViewModel.selectedFund.collectAsStateWithLifecycle()
+    val schemeCode = selectedFund?.schemeCode
+
+    val watchlistsContainingFund by remember(schemeCode) {
+        watchlistViewModel.getWatchlistsForFund(schemeCode)
+    }.collectAsStateWithLifecycle(initialValue = emptyList())
+
+    val isBookmarked = watchlistsContainingFund.isNotEmpty()
+
     Scaffold(
         containerColor = Color.White,
         topBar = {
@@ -112,7 +124,8 @@ fun MutualFundApp(
                     if (currentScreen == MutualFundAppScreen.Analysis) {
                         showBottomSheet = true
                     }
-                }
+                },
+                isBookmarked = isBookmarked
             )
         },
         bottomBar = {
@@ -233,21 +246,37 @@ fun MutualFundApp(
             composable (MutualFundAppScreen.WatchList.name) {
                 WatchListScreen(
                     modifier = Modifier.padding(innerPadding),
+                    watchlistViewModel = watchlistViewModel,
+                    onWatchlistClick = { watchlistId, watchlistName ->
+                        navController.navigate("${MutualFundAppScreen.Portfolio.name}/$watchlistId/$watchlistName")
+                    }
                 )
             }
 
-            composable (MutualFundAppScreen.Funds.name) {
-//                ListScreen(
-//                    {},
-//                    modifier = Modifier.padding(innerPadding),
-//                )
-            }
+            composable (
+                route = "${MutualFundAppScreen.Portfolio.name}/{watchlistId}/{watchlistName}",
+                arguments = listOf(
+                    navArgument("watchlistId") { type = NavType.LongType },
+                    navArgument("watchlistName") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val watchlistId = backStackEntry.arguments?.getLong("watchlistId") ?: 0L
 
-            composable (MutualFundAppScreen.Portfolio.name) {
-//                ListScreen(
-//                    {},
-//                    modifier = Modifier.padding(innerPadding),
-//                )
+                PortfolioScreen(
+                    watchlistId = watchlistId,
+                    watchlistViewModel = watchlistViewModel,
+                    modifier = Modifier.padding(innerPadding),
+                    onExploreFundsClick = {
+                        // Takes the user back to the Explore tab
+                        navController.navigate(MutualFundAppScreen.Explore.name) {
+                            popUpTo(MutualFundAppScreen.Explore.name) { inclusive = true }
+                        }
+                    },
+                    onFundClick = { code, name ->
+                        exploreViewModel.selectFund(code, name)
+                        navController.navigate(MutualFundAppScreen.Analysis.name)
+                    }
+                )
             }
         }
     }
@@ -263,7 +292,8 @@ fun AppBar(
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    onBookmarkClick: () -> Unit = {}
+    onBookmarkClick: () -> Unit = {},
+    isBookmarked: Boolean = false
 ) {
     Column{
         TopAppBar(
@@ -292,8 +322,8 @@ fun AppBar(
                 if (currentScreen == MutualFundAppScreen.Analysis) {
                     IconButton(onClick = onBookmarkClick) {
                         Icon(
-                            imageVector = Icons.Filled.BookmarkBorder,
-                            contentDescription = "Bookmark Mutual Fund"
+                            imageVector = if (isBookmarked) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                            contentDescription = if (isBookmarked) "Saved to Portfolio" else "Bookmark Mutual Fund"
                         )
                     }
                 }

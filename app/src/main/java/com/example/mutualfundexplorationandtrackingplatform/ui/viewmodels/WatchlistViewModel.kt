@@ -3,6 +3,7 @@ package com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.WatchListDao
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
 import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.WatchList
 import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.WatchListFundCrossRef
 import kotlinx.coroutines.flow.Flow
@@ -47,5 +48,10 @@ class WatchlistViewModel(
                 watchlistDao.removeFundFromWatchlist(watchlistId, schemeCode)
             }
         }
+    }
+
+    // 5. Get funds for a specific watchlist (NEW)
+    fun getFundsInWatchlist(watchlistId: Long): Flow<List<MutualFundDetail>> {
+        return watchlistDao.getFundsInWatchlist(watchlistId)
     }
 }
