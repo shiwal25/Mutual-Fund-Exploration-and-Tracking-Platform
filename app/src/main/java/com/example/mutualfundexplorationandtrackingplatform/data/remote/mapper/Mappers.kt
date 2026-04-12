@@ -19,10 +19,6 @@ fun MutualFundDTO.toEntity(): MutualFundDetail {
     )
 }
 
-fun List<MutualFundDTO>.toEntityList(): List<MutualFundDetail> {
-    return this.map { it.toEntity() }
-}
-
 
 fun MutualFundDetail.toDTO(): MutualFundDTO {
     return MutualFundDTO(

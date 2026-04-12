@@ -47,13 +47,11 @@ fun PortfolioScreen(
 
     Box(modifier = modifier.fillMaxSize().padding(16.dp)) {
         if (funds.isEmpty()) {
-            // EMPTY STATE (Matches your wireframe)
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // Using a standard icon as a placeholder for the custom line-art
                 Icon(
                     imageVector = Icons.Outlined.Inventory,
                     contentDescription = "Empty Portfolio",
@@ -83,7 +81,7 @@ fun PortfolioScreen(
                 OutlinedButton(
                     onClick = onExploreFundsClick,
                     border = BorderStroke(2.dp, Color.Black),
-                    shape = RoundedCornerShape(4.dp), // Squared-off button like the wireframe
+                    shape = RoundedCornerShape(4.dp),
                     modifier = Modifier.padding(horizontal = 32.dp)
                 ) {
                     Text(
@@ -95,7 +93,6 @@ fun PortfolioScreen(
                 }
             }
         } else {
-            // POPULATED STATE
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)

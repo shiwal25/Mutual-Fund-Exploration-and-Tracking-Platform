@@ -17,7 +17,7 @@ class WatchlistViewModel(
     private val watchlistDao: WatchListDao
 ) : ViewModel() {
 
-    // 1. Expose all watchlists as a state flow
+    /*TODO instead of getting data from DAO get ot from repository*/
     val allWatchlists: StateFlow<List<WatchList>> = watchlistDao.getAllWatchlists()
         .stateIn(
             scope = viewModelScope,
@@ -25,13 +25,11 @@ class WatchlistViewModel(
             initialValue = emptyList()
         )
 
-    // 2. Get which watchlists contain the currently viewed fund
     fun getWatchlistsForFund(schemeCode: Int?): Flow<List<Long>> {
         if (schemeCode == null) return flowOf(emptyList())
         return watchlistDao.getWatchlistsContainingFund(schemeCode)
     }
 
-    // 3. Create a new Watchlist
     fun addWatchlist(name: String) {
         if (name.isBlank()) return
         viewModelScope.launch {
@@ -39,7 +37,6 @@ class WatchlistViewModel(
         }
     }
 
-    // 4. Toggle fund in a watchlist
     fun toggleFundInWatchlist(watchlistId: Long, schemeCode: Int, isChecked: Boolean) {
         viewModelScope.launch {
             if (isChecked) {
@@ -50,7 +47,6 @@ class WatchlistViewModel(
         }
     }
 
-    // 5. Get funds for a specific watchlist (NEW)
     fun getFundsInWatchlist(watchlistId: Long): Flow<List<MutualFundDetail>> {
         return watchlistDao.getFundsInWatchlist(watchlistId)
     }

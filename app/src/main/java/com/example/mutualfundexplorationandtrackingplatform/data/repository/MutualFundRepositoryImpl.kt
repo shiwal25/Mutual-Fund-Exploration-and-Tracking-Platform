@@ -1,15 +1,14 @@
 package com.example.mutualfundexplorationandtrackingplatform.data.repository
 
-import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.example.mutualfundexplorationandtrackingplatform.data.paging.MutualFundPagingSource
 import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.MutualFundDAO
 import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
-import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.NavPoint
+import com.example.mutualfundexplorationandtrackingplatform.data.paging.MutualFundPagingSource
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.api.MutualFundApiService
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundDTO
+import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.NavPoint
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper.toEntity
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper.toEntity2
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper.toEntityWithCategory
@@ -32,43 +31,33 @@ class MutualFundRepositoryImpl(private val mutualFundDAO: MutualFundDAO,
     ).flow
 
     override suspend fun fetchAndCacheDetails(schemeCode: Int?): Result<MutualFundDetail> {
-        Log.d("Repository", "fetchAndCacheDetails called for schemeCode=$schemeCode")  // ADD THIS
 
         val cached = mutualFundDAO.getFundByScheme(schemeCode)
-        Log.d("Repository", "Cached: ${cached?.schemeCode}, detailsIsFetched=${cached?.detailsIsFetched}")  // ADD THIS
 
         if (cached != null && cached.detailsIsFetched) {
-            Log.d("Repository", "Returning cached data")  // ADD THIS
             return Result.success(cached)
         }
 
         return try {
-            Log.d("Repository", "Calling API for details")  // ADD THIS
             val dto = mutualFundApiService.getFundDetails(schemeCode)
-            Log.d("Repository", "API response: meta=${dto.meta}, data size=${dto.data.size}")  // ADD THIS
 
             val entity = dto.toEntity2()
-            Log.d("Repository", "Mapped entity: latestNav=${entity.latestNav}, detailsIsFetched=${entity.detailsIsFetched}")  // ADD THIS
 
             mutualFundDAO.updateFundDetails(
                 schemeCode = schemeCode,
                 fundHouse = entity.fundHouse,
                 schemeType = entity.schemeType,
-//                schemeCategory = entity.schemeCategory,
                 latestNav = entity.latestNav,
                 latestNavDate = entity.latestNavDate,
                 isInGrowth = entity.isInGrowth,
                 isInDivReinvestment = entity.isInDivReinvestment
             )
-            Log.d("Repository", "DB update called")
 
             val updated = mutualFundDAO.getFundByScheme(schemeCode)
-                ?: error("Row missing after update — should never happen")
-            Log.d("Repository", "Updated entity from DB: latestNav=${updated.latestNav}, detailsIsFetched=${updated.detailsIsFetched}")  // ADD THIS
+                ?: error("Data missing")
 
             Result.success(updated)
         } catch (e: Exception) {
-            Log.e("Repository", "Error fetching details: ${e.message}", e)  // ADD THIS
             val stale = mutualFundDAO.getFundByScheme(schemeCode)
             if (stale != null) {
                 Result.success(stale)
@@ -82,9 +71,7 @@ class MutualFundRepositoryImpl(private val mutualFundDAO: MutualFundDAO,
         mutualFundDAO.observeFundByScheme(schemeCode)
 
 override suspend fun fetchAndCacheCategoryFunds(category: String): Result<List<MutualFundDetail>> {
-    Log.d("MutualFundRepositoryImpl", "fetchAndCacheCategoryFunds called for: $category")
     return try {
-        // Map query parameter to API search term
         val searchQuery = when(category) {
             "indexfunds" -> "index"
             "bluechip" -> "bluechip"
@@ -94,27 +81,19 @@ override suspend fun fetchAndCacheCategoryFunds(category: String): Result<List<M
         }
 
         val dtos = mutualFundApiService.getFundsByCategory(searchQuery)
-        Log.d("MutualFundRepositoryImpl", "API returned ${dtos.size} DTOs for searchQuery: $searchQuery")
 
         if (dtos.isEmpty()) {
-            Log.d("MutualFundRepositoryImpl", "Empty result for $category, returning empty list")
 
             return Result.success(emptyList())
         }
 
-        // Convert to entities with category
         val entities = dtos.map { it.toEntityWithCategory(category) }
 
-        // Save to database
         mutualFundDAO.insertFunds(entities)
-        Log.d("MutualFundRepositoryImpl", "Inserted ${entities.size} entities to DB for category: $category")
-        // Return from DB to get consistent data
         val saved = mutualFundDAO.getFundsByCategory(category)
-        Log.d("MutualFundRepositoryImpl", "Retrieved ${saved.size} saved funds from DB for: $category")
 
         Result.success(saved)
     } catch (e: Exception) {
-        Log.e("MutualFundRepositoryImpl", "Error fetching category $category: ${e.message}", e)
 
         val cached = mutualFundDAO.getFundsByCategory(category)
         if (cached.isNotEmpty()) {
@@ -134,7 +113,6 @@ override suspend fun fetchAndCacheCategoryFunds(category: String): Result<List<M
             val response = mutualFundApiService.getNavData(schemeCode, startDate, endDate)
             Result.success(response.data)
         } catch (e: Exception) {
-            Log.e("MutualFundRepositoryImpl", "Error fetching NAV data: ${e.message}", e)
             Result.failure(e)
         }
     }
@@ -146,11 +124,9 @@ override suspend fun fetchAndCacheCategoryFunds(category: String): Result<List<M
             mutualFundDAO.insertFunds(entities)
             dtos
         } catch (e: Exception) {
-            Log.e("MutualFundRepositoryImpl", "Error searching funds: ${e.message}", e)
             throw e
         }
     }
-
 
     override fun observeCategoryFunds(category: String): Flow<List<MutualFundDetail>> =
         mutualFundDAO.observeFundsByCategory(category)

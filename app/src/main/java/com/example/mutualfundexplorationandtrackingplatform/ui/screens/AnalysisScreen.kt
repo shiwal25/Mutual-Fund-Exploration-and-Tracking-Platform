@@ -13,13 +13,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +24,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -59,7 +57,6 @@ fun AnalysisScreen(
     onDismissBottomSheet: () -> Unit
 ) {
 
-    val periods = listOf("6M", "1Y", "ALL")
     var selectedPeriod by remember { mutableStateOf("6M") }
 
     val selectedFund by viewModel.selectedFund.collectAsStateWithLifecycle()
@@ -74,9 +71,8 @@ fun AnalysisScreen(
     }
 
     LaunchedEffect(schemeCode, selectedPeriod) {
-        viewModel.fetchNavDataForPeriod(schemeCode?.toString(), selectedPeriod)
+        viewModel.fetchNavDataForGraph(schemeCode?.toString(), selectedPeriod)
     }
-
 
     val fundName = when (val state = detailState) {
         is DetailUiState.Loaded -> state.schemeName ?: "Unknown Fund"
@@ -108,7 +104,6 @@ fun AnalysisScreen(
         } else "0%"
     }
 
-    // Calculate fund type and color based on growth
     val (fundType, typeColor) = remember(navData) {
         if (navData.size >= 2) {
             val firstNav = navData.lastOrNull()?.nav?.toDoubleOrNull() ?: 0.0
@@ -118,8 +113,8 @@ fun AnalysisScreen(
                 val growth = ((lastNav - firstNav) / firstNav) * 100
 
                 when {
-                    growth > 0.1 -> Pair("Growth", Color(0xFF4CAF50)) // Green
-                    growth < -0.1 -> Pair("Decline", Color(0xFFF44336)) // Red
+                    growth > 0.1 -> Pair("Growth", Color.Green)
+                    growth < -0.1 -> Pair("Decline", Color.Red)
                     else -> Pair("Stable", Color.Gray)
                 }
             } else {
@@ -164,7 +159,6 @@ fun AnalysisScreen(
                     color = Color.Black
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                // Calculate arrow and color based on growth
                 val (growthArrow, growthColor) = remember(navData) {
                     if (navData.size >= 2) {
                         val firstNav = navData.lastOrNull()?.nav?.toFloatOrNull() ?: 0f
@@ -174,9 +168,9 @@ fun AnalysisScreen(
                             val growth = ((lastNav - firstNav) / firstNav) * 100
 
                             when {
-                                growth > 0.1 -> Pair("↑", Color(0xFF4CAF50))  // Positive: up arrow, green
-                                growth < -0.1 -> Pair("↓", Color(0xFFF44336)) // Negative: down arrow, red
-                                else -> Pair("→", Color.Gray)                  // Stable: right arrow, grey
+                                growth > 0.1 -> Pair("↑", Color.Green)
+                                growth < -0.1 -> Pair("↓", Color.Red)
+                                else -> Pair("→", Color.Gray)
                             }
                         } else {
                             Pair("→", Color.Gray)
@@ -227,7 +221,6 @@ fun AnalysisScreen(
                             .padding(horizontal = 12.dp)
                             .clickable {
                                 selectedPeriod = period
-                                /*TODO change graph accordingly*/
                             },
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
@@ -257,7 +250,6 @@ fun AnalysisScreen(
                     .padding(vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Type with color
                 Column(
                     modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -285,10 +277,8 @@ fun AnalysisScreen(
     if (showBottomSheet) {
         var newPortfolioName by remember { mutableStateOf("") }
 
-        // Collect all watchlists to display
         val watchlists by watchlistViewModel.allWatchlists.collectAsStateWithLifecycle()
 
-        // Collect IDs of watchlists that already contain this specific fund
         val watchlistsContainingFund by remember(schemeCode) {
             watchlistViewModel.getWatchlistsForFund(schemeCode)
         }.collectAsStateWithLifecycle(initialValue = emptyList())
@@ -318,14 +308,22 @@ fun AnalysisScreen(
                             .padding(8.dp),
                         shape = RoundedCornerShape(8.dp),
                         singleLine = true,
-                        placeholder = { Text("New Portfolio Name...") }
-                    )
+                        placeholder = { Text("New Portfolio Name...") },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color.Black,
+                            unfocusedBorderColor = Color.Black,
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black,
+                            cursorColor = Color.Black,
+                            focusedPlaceholderColor = Color.Black,
+                            unfocusedPlaceholderColor = Color.Black
+                        )                    )
 
                     OutlinedButton(
                         onClick = {
                             if (newPortfolioName.isNotBlank()) {
                                 watchlistViewModel.addWatchlist(newPortfolioName)
-                                newPortfolioName = "" // Clear input after adding
+                                newPortfolioName = ""
                             }
                         },
                         shape = RoundedCornerShape(8.dp),
@@ -337,11 +335,10 @@ fun AnalysisScreen(
 
                 HorizontalDivider(thickness = 2.dp, color = Color.Black, modifier = Modifier.padding(vertical = 8.dp))
 
-                // Scrollable list of watchlists
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 32.dp) // Extra padding for bottom sheet safety
+                        .padding(bottom = 32.dp)
                 ) {
                     items(watchlists, key = { it.watchListId }) { watchlist ->
                         val isChecked = watchlistsContainingFund.contains(watchlist.watchListId)
@@ -355,7 +352,7 @@ fun AnalysisScreen(
                                         watchlistViewModel.toggleFundInWatchlist(
                                             watchlistId = watchlist.watchListId,
                                             schemeCode = schemeCode,
-                                            isChecked = !isChecked // Toggle state
+                                            isChecked = !isChecked
                                         )
                                     }
                                 }

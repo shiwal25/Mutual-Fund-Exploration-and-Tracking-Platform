@@ -1,8 +1,8 @@
 package com.example.mutualfundexplorationandtrackingplatform.data.remote.api
 
-import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.NavDataResponse
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundDTO
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundResponseDTO
+import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.NavDataResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

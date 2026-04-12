@@ -33,12 +33,10 @@ fun WatchListScreen(
     watchlistViewModel: WatchlistViewModel,
     onWatchlistClick: (Long, String) -> Unit = { _, _ -> }
 ) {
-    // Collect the state flow from your ViewModel
     val watchlists by watchlistViewModel.allWatchlists.collectAsStateWithLifecycle()
 
     Box(modifier = modifier.fillMaxSize().padding(16.dp)) {
         if (watchlists.isEmpty()) {
-            // Optional Empty State
             Text(
                 text = "No portfolios yet.",
                 style = MaterialTheme.typography.titleMedium,

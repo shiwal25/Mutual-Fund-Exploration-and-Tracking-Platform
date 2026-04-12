@@ -15,6 +15,6 @@ data class MetaData(
 )
 
 data class NavPoint(
-    val date: String,  // Format: "dd-MM-yyyy"
+    val date: String,
     val nav: String
 )

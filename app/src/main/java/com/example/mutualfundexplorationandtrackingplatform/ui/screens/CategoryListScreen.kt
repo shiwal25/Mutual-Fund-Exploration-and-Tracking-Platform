@@ -10,10 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mutualfundexplorationandtrackingplatform.ui.components.ListScreenItem
-import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.CategoryUiState
+import com.example.mutualfundexplorationandtrackingplatform.ui.utils.CategoryUiState
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ExploreViewModel
 
 @Composable
@@ -23,7 +24,6 @@ fun CategoryListScreen(
     onClick: (Int?, String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // 1. Collect all the existing states from your ExploreViewModel
     val indexFundsState by viewModel.indexFundsState.collectAsStateWithLifecycle()
     val bluechipFundsState by viewModel.bluechipFundsState.collectAsStateWithLifecycle()
     val taxFundsState by viewModel.taxFundsState.collectAsStateWithLifecycle()
@@ -37,10 +37,9 @@ fun CategoryListScreen(
         else -> emptyList()
     }
 
-    // 3. Display the FULL list (notice there is no .take(4) here!)
     if (fundsList.isEmpty()) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("No funds found for $categoryName")
+            Text("No funds found for $categoryName", color = Color.Red)
         }
     } else {
         LazyColumn(

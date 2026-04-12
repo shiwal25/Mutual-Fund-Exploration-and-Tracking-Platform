@@ -10,13 +10,12 @@ import com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper.t
 
 class MutualFundPagingSource(
     private val apiService: MutualFundApiService,
-    private val dao: MutualFundDAO  // Add DAO parameter
+    private val dao: MutualFundDAO
 ) : PagingSource<Int, MutualFundDTO>() {
 
 override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MutualFundDTO> {
     val offset = params.key ?: 0
     return try {
-        // Try API first
         val items = apiService.getMutualFunds(limit = params.loadSize, offset = offset)
         val entities = items.map { it.toEntity() }
         dao.insertFunds(entities)
@@ -26,11 +25,9 @@ override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MutualFundDT
             nextKey = if (items.size < params.loadSize) null else offset + params.loadSize
         )
     } catch (e: Exception) {
-        // On error, try loading from database
         try {
             val cachedItems = dao.getAllFunds(limit = params.loadSize, offset = offset)
             if (cachedItems.isNotEmpty()) {
-                // Convert entities back to DTOs for display
                 val dtos = cachedItems.map { it.toDTO() }
                 LoadResult.Page(
                     data = dtos,

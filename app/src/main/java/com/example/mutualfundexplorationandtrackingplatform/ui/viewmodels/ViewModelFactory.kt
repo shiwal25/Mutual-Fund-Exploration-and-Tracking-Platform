@@ -22,9 +22,6 @@ class ViewModelFactory(
             modelClass.isAssignableFrom(WatchlistViewModel::class.java) ->
                 WatchlistViewModel(watchListDao) as T
 
-            modelClass.isAssignableFrom(FundDetailViewModel::class.java) ->
-                FundDetailViewModel(mutualFundRepository) as T
-
             else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
         }
     }

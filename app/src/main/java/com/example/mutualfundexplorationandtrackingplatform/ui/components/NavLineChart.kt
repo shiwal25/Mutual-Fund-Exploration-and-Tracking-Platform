@@ -50,7 +50,7 @@ fun NavLineChart(
     }
 
     val dateFormatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-    val monthYearFormatter = SimpleDateFormat("MMM", Locale.getDefault())
+    val monthYearFormatter = SimpleDateFormat("MMM'\n'yyyy", Locale.getDefault())
     val reversedData = navData.reversed()
 
     val sampledData = remember(reversedData) {
@@ -87,9 +87,10 @@ fun NavLineChart(
         String.format("%.1f", value)
     }
 
-    // Create text components using Vico's builder function
     val axisLabelComponent = textComponent {
         color = Color.Black.toArgb()
+        textSizeSp = 10f
+        lineCount = 2
     }
 
     ProvideChartStyle {

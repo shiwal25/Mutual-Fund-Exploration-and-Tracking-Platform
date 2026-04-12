@@ -47,7 +47,7 @@ class SearchViewModel(
         }
 
         searchJob = viewModelScope.launch {
-            delay(300L) // 300ms debounce
+            delay(300L)
             performSearch(query)
         }
     }
@@ -55,7 +55,7 @@ class SearchViewModel(
     private suspend fun performSearch(query: String) {
         _isLoading.value = true
         _error.value = null
-
+//show loader when isLaoding is true
         try {
             val results = mutualFundRepository.searchFunds(query)
             _searchResults.value = results
@@ -67,19 +67,19 @@ class SearchViewModel(
         }
     }
 
-    private val inFlightJobs = ConcurrentHashMap<Int, Job>()
+    private val fetchNavJob = ConcurrentHashMap<Int, Job>()
 
     override fun requestDetail(schemeCode: Int?) {
-        if (inFlightJobs.containsKey(schemeCode)) return
+        if (fetchNavJob.containsKey(schemeCode)) return
 
         val job = viewModelScope.launch {
             try {
                 mutualFundRepository.fetchAndCacheDetails(schemeCode)
             } finally {
-                inFlightJobs.remove(schemeCode)
+                fetchNavJob.remove(schemeCode)
             }
         }
-        inFlightJobs[schemeCode as Int] = job
+        fetchNavJob[schemeCode as Int] = job
     }
 
     override fun getDetailFlow(schemeCode: Int?): Flow<DetailUiState> {

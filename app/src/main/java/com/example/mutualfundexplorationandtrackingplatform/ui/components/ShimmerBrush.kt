@@ -1,8 +1,15 @@
 package com.example.mutualfundexplorationandtrackingplatform.ui.components
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,17 +38,17 @@ fun ShimmerBrush(): Brush {
         label = "shimmer_translate"
     )
     return Brush.linearGradient(
-        colors      = shimmerColors,
-        start       = Offset(translateAnimation - 200f, 0f),
-        end         = Offset(translateAnimation, 0f)
+        colors = shimmerColors,
+        start = Offset(translateAnimation - 200f, 0f),
+        end = Offset(translateAnimation, 0f)
     )
 }
 
 @Composable
 fun ShimmerBox(
     modifier: Modifier = Modifier,
-    width: Dp  = 120.dp,
-    height: Dp = 14.dp
+    width:Dp=120.dp,
+    height:Dp=14.dp
 ) {
     Box(
         modifier = modifier

@@ -1,22 +1,33 @@
 package com.example.mutualfundexplorationandtrackingplatform.ui.screens
 
-import android.util.Log
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.rememberNavController
 import com.example.mutualfundexplorationandtrackingplatform.ui.components.ExploreScreenFunds
-import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.CategoryUiState
+import com.example.mutualfundexplorationandtrackingplatform.ui.utils.CategoryUiState
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ExploreViewModel
 
 @Composable
@@ -31,12 +42,6 @@ fun ExploreScreen(
     val bluechipFundsState by viewModel.bluechipFundsState.collectAsStateWithLifecycle()
     val taxFundsState by viewModel.taxFundsState.collectAsStateWithLifecycle()
     val largeCapFundsState by viewModel.largeCapFundsState.collectAsStateWithLifecycle()
-    Log.d("ExploreScreen", "Collected states:")
-    Log.d("ExploreScreen", "  Index: ${indexFundsState::class.simpleName} - $indexFundsState")
-    Log.d("ExploreScreen", "  Bluechip: ${bluechipFundsState::class.simpleName} - $bluechipFundsState")
-    Log.d("ExploreScreen", "  Tax: ${taxFundsState::class.simpleName} - $taxFundsState")
-    Log.d("ExploreScreen", "  LargeCap: ${largeCapFundsState::class.simpleName} - $largeCapFundsState")
-
 
     Column(
         modifier = modifier
@@ -86,13 +91,13 @@ fun ExploreScreen(
                 }
             }
             is CategoryUiState.Loading -> {
-                // Show loading indicator
+                CircularProgressIndicator()
             }
             is CategoryUiState.Empty -> {
-                // Show empty state
+                //Not shoiwng the category if empty
             }
             is CategoryUiState.Error -> {
-                Text("Error: ${state.message}")
+                Text(text = "Error fetching Index Funds",color = Color.Red)
             }
         }
 
@@ -111,8 +116,15 @@ fun ExploreScreen(
                     )
                 }
             }
-            is CategoryUiState.Loading -> {}
-            is CategoryUiState.Empty, is CategoryUiState.Error -> {}
+            is CategoryUiState.Loading -> {
+                CircularProgressIndicator()
+            }
+            is CategoryUiState.Empty -> {
+                //Not shoiwng the category if empty
+            }
+            is CategoryUiState.Error -> {
+                Text(text = "Error fetching Blue Chip Funds",color = Color.Red)
+            }
         }
 
         when (val state = taxFundsState) {
@@ -129,8 +141,15 @@ fun ExploreScreen(
                     )
                 }
             }
-            is CategoryUiState.Loading -> {}
-            is CategoryUiState.Empty, is CategoryUiState.Error -> {}
+            is CategoryUiState.Loading -> {
+                CircularProgressIndicator()
+            }
+            is CategoryUiState.Empty -> {
+                //Not shoiwng the category if empty
+            }
+            is CategoryUiState.Error -> {
+                Text(text = "Error fetching Tax Saver Funds",color = Color.Red)
+            }
         }
 
         when (val state = largeCapFundsState) {
@@ -147,8 +166,15 @@ fun ExploreScreen(
                     )
                 }
             }
-            is CategoryUiState.Loading -> {}
-            is CategoryUiState.Empty, is CategoryUiState.Error -> {}
+            is CategoryUiState.Loading -> {
+                CircularProgressIndicator()
+            }
+            is CategoryUiState.Empty -> {
+                //Not shoiwng the category if empty
+            }
+            is CategoryUiState.Error -> {
+                Text(text = "Error fetching Large Cap Funds",color = Color.Red)
+            }
         }
     }
 }

@@ -61,7 +61,6 @@ enum class MutualFundAppScreen (val route: String){
     Analysis("analysis"),
     Search("search"),
     WatchList("watchlist"),
-    Funds("funds"),
     Portfolio("portfolio"),
     CategoryAllFunds("categoryAllFunds")
 }
@@ -159,8 +158,6 @@ fun MutualFundApp(
                             ) {
                                 Text(text = "Explore", color = Color.Black)
                             }
-
-
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
@@ -262,7 +259,7 @@ fun MutualFundApp(
             }
 
             composable (
-                route = "${MutualFundAppScreen.Portfolio.name}/{watchlistId}/{watchlistName}",
+                route = "${MutualFundAppScreen.Portfolio.name}/{watchlistId}/{watchlistName}",  /*TODO simplify routing*/
                 arguments = listOf(
                     navArgument("watchlistId") { type = NavType.LongType },
                     navArgument("watchlistName") { type = NavType.StringType }
@@ -275,7 +272,6 @@ fun MutualFundApp(
                     watchlistViewModel = watchlistViewModel,
                     modifier = Modifier.padding(innerPadding),
                     onExploreFundsClick = {
-                        // Takes the user back to the Explore tab
                         navController.navigate(MutualFundAppScreen.Explore.name) {
                             popUpTo(MutualFundAppScreen.Explore.name) { inclusive = true }
                         }
