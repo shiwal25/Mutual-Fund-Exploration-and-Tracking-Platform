@@ -18,6 +18,7 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+//        multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -35,6 +36,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+//    kotlin {
+//        compilerOptions {
+//            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+//        }
+//    }
     buildFeatures {
         compose = true
     }
@@ -98,5 +104,10 @@ dependencies {
     implementation("androidx.paging:paging-compose:3.4.2")
 
     implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+//    implementation("androidx.multidex:multidex:2.0.1")
 
+    // Vico Chart Library (Compose-native)
+    implementation("com.patrykandpatrick.vico:compose:1.13.1")
+    implementation("com.patrykandpatrick.vico:compose-m3:1.13.1")
+    implementation("com.patrykandpatrick.vico:core:1.13.1")
 }

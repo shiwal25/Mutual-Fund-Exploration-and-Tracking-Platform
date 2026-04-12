@@ -1,5 +1,6 @@
 package com.example.mutualfundexplorationandtrackingplatform.data.remote.api
 
+import com.example.mutualfundexplorationandtrackingplatform.data.models.NavDataResponse
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundDTO
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundResponseDTO
 import retrofit2.http.GET
@@ -23,4 +24,11 @@ interface MutualFundApiService {
     suspend fun getFundsByCategory(
         @Query("q") q:String
     ): List<MutualFundDTO>
+
+    @GET("mf/{schemeCode}")
+    suspend fun getNavData(
+        @Path("schemeCode") schemeCode: String,
+        @Query("startDate") startDate: String? = null,
+        @Query("endDate") endDate: String? = null
+    ): NavDataResponse
 }

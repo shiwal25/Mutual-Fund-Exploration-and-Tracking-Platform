@@ -21,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mutualfundexplorationandtrackingplatform.ui.components.AnalysisStatItem
+import com.example.mutualfundexplorationandtrackingplatform.ui.components.NavLineChart
 import com.example.mutualfundexplorationandtrackingplatform.ui.utils.DetailUiState
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ExploreViewModel
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.WatchlistViewModel
@@ -58,7 +60,7 @@ fun AnalysisScreen(
 ) {
 
     val periods = listOf("6M", "1Y", "ALL")
-    var selectedPeriod by remember { mutableStateOf("1Y") }
+    var selectedPeriod by remember { mutableStateOf("6M") }
 
     val selectedFund by viewModel.selectedFund.collectAsStateWithLifecycle()
     val schemeCode = selectedFund?.schemeCode
@@ -70,6 +72,11 @@ fun AnalysisScreen(
     LaunchedEffect(schemeCode) {
         viewModel.requestDetail(schemeCode)
     }
+
+    LaunchedEffect(schemeCode, selectedPeriod) {
+        viewModel.fetchNavDataForPeriod(schemeCode?.toString(), selectedPeriod)
+    }
+
 
     val fundName = when (val state = detailState) {
         is DetailUiState.Loaded -> state.schemeName ?: "Unknown Fund"
@@ -87,7 +94,42 @@ fun AnalysisScreen(
         is DetailUiState.Error -> "-"
     }
 
-    val growthPercentage = "10%"    /*TODO calculate krna h accoridn to graph timeLine*/
+    val navData by viewModel.navData.collectAsStateWithLifecycle()
+    val isLoadingGraph by viewModel.isLoadingGraph.collectAsStateWithLifecycle()
+
+    val growthPercentage = remember(navData) {
+        if (navData.size >= 2) {
+            val firstNav = navData.lastOrNull()?.nav?.toFloatOrNull() ?: 0f
+            val lastNav = navData.firstOrNull()?.nav?.toFloatOrNull() ?: 0f
+            if (firstNav > 0) {
+                val growth = ((lastNav - firstNav) / firstNav) * 100
+                String.format("%.2f%%", growth)
+            } else "0%"
+        } else "0%"
+    }
+
+    // Calculate fund type and color based on growth
+    val (fundType, typeColor) = remember(navData) {
+        if (navData.size >= 2) {
+            val firstNav = navData.lastOrNull()?.nav?.toDoubleOrNull() ?: 0.0
+            val lastNav = navData.firstOrNull()?.nav?.toDoubleOrNull() ?: 0.0
+
+            if (firstNav > 0) {
+                val growth = ((lastNav - firstNav) / firstNav) * 100
+
+                when {
+                    growth > 0.1 -> Pair("Growth", Color(0xFF4CAF50)) // Green
+                    growth < -0.1 -> Pair("Decline", Color(0xFFF44336)) // Red
+                    else -> Pair("Stable", Color.Gray)
+                }
+            } else {
+                Pair("Stable", Color.Gray)
+            }
+        } else {
+            Pair("-", Color.Gray)
+        }
+    }
+
     val description = "Fund details not available."
 
     Column(
@@ -131,14 +173,22 @@ fun AnalysisScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .border(BorderStroke(1.dp, Color.Black), RoundedCornerShape(4.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Graph Placeholder", color = Color.LightGray)
+            if (isLoadingGraph) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .border(BorderStroke(1.dp, Color.Black), RoundedCornerShape(4.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                NavLineChart(
+                    navData = navData,
+                    modifier = Modifier
+                        .border(BorderStroke(1.dp, Color.Black), RoundedCornerShape(4.dp))
+                )
             }
 
             Row(
@@ -185,7 +235,23 @@ fun AnalysisScreen(
                     .padding(vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AnalysisStatItem("Type", "-", Modifier.weight(1f))
+                // Type with color
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Type",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                    Text(
+                        text = fundType,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                        color = typeColor
+                    )
+                }
+
                 VerticalDivider(modifier = Modifier.height(40.dp), color = Color.Black)
                 AnalysisStatItem("Size", "-", Modifier.weight(1f))
                 VerticalDivider(modifier = Modifier.height(40.dp), color = Color.Black)

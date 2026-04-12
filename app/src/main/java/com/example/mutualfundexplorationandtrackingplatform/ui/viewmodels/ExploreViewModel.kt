@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
+import com.example.mutualfundexplorationandtrackingplatform.data.models.NavPoint
 import com.example.mutualfundexplorationandtrackingplatform.data.repository.MutualFundRepository
 import com.example.mutualfundexplorationandtrackingplatform.ui.utils.DetailUiState
 import kotlinx.coroutines.Job
@@ -15,6 +16,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 
 sealed class CategoryUiState {
@@ -45,6 +50,13 @@ class ExploreViewModel(
 
     private val _selectedFund = MutableStateFlow<SelectedFund?>(null)
     val selectedFund: StateFlow<SelectedFund?> = _selectedFund.asStateFlow()
+
+    private val _navData = MutableStateFlow<List<NavPoint>>(emptyList())
+    val navData: StateFlow<List<NavPoint>> = _navData.asStateFlow()
+
+    private val _isLoadingGraph = MutableStateFlow(false)
+    val isLoadingGraph: StateFlow<Boolean> = _isLoadingGraph.asStateFlow()
+
 
     fun selectFund(schemeCode: Int?, schemeName: String?) {
         _selectedFund.value = SelectedFund(schemeCode, schemeName)
@@ -151,6 +163,111 @@ class ExploreViewModel(
             else -> DetailUiState.Error
         }
     }
+
+//    fun fetchNavDataForPeriod(schemeCode: String?, period: String) {
+//        schemeCode ?: return
+//
+//        viewModelScope.launch {
+//            _isLoadingGraph.value = true
+//            try {
+//                // Calculate dates based on period in ViewModel
+//                val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+//
+//                val (startDate, endDate) = when (period) {
+//                    "6M" -> {
+//                        val calendar = Calendar.getInstance()
+//                        calendar.add(Calendar.MONTH, -6)
+//                        val start = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+//                            .format(calendar.time)
+//                        Pair(start, today)
+//                    }
+//                    "1Y" -> {
+//                        val calendar = Calendar.getInstance()
+//                        calendar.add(Calendar.YEAR, -1)
+//                        val start = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+//                            .format(calendar.time)
+//                        Pair(start, today)
+//                    }
+//                    else -> Pair(null, null) // For "ALL"
+//                }
+//
+//                // Call repository with calculated dates
+//                val result = mutualFundRepository.fetchNavData(schemeCode, startDate, endDate)
+//
+//                result.onSuccess { data ->
+//                    _navData.value = data
+//                }.onFailure { e ->
+//                    Log.e("ExploreViewModel", "Error fetching NAV data: ${e.message}", e)
+//                    _navData.value = emptyList()
+//                }
+//            } catch (e: Exception) {
+//                Log.e("ExploreViewModel", "Error in fetchNavDataForPeriod: ${e.message}", e)
+//                _navData.value = emptyList()
+//            }
+//            _isLoadingGraph.value = false
+//        }
+//    }
+
+    fun fetchNavDataForPeriod(schemeCode: String?, period: String) {
+        schemeCode ?: return
+
+        viewModelScope.launch {
+            _isLoadingGraph.value = true
+            try {
+                if (period == "ALL") {
+                    // For ALL, just fetch everything
+                    val result = mutualFundRepository.fetchNavData(schemeCode, null, null)
+                    result.onSuccess { data ->
+                        _navData.value = data
+                    }.onFailure { e ->
+                        Log.e("ExploreViewModel", "Error fetching NAV data: ${e.message}", e)
+                        _navData.value = emptyList()
+                    }
+                } else {
+                    // First fetch all data to get the latest available date
+                    val allDataResult = mutualFundRepository.fetchNavData(schemeCode, null, null)
+
+                    allDataResult.onSuccess { allData ->
+                        if (allData.isNotEmpty()) {
+                            // Parse the latest date from the API data
+                            val apiDateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                            val latestNavDate = apiDateFormat.parse(allData.first().date)
+
+                            val outputDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                            val endDate = outputDateFormat.format(latestNavDate!!)
+
+                            val calendar = Calendar.getInstance()
+                            calendar.time = latestNavDate
+
+                            when (period) {
+                                "6M" -> calendar.add(Calendar.MONTH, -6)
+                                "1Y" -> calendar.add(Calendar.YEAR, -1)
+                            }
+
+                            val startDate = outputDateFormat.format(calendar.time)
+
+                            // Fetch data with calculated dates
+                            val result = mutualFundRepository.fetchNavData(schemeCode, startDate, endDate)
+                            result.onSuccess { data ->
+                                _navData.value = data
+                            }.onFailure { e ->
+                                _navData.value = emptyList()
+                            }
+                        } else {
+                            _navData.value = emptyList()
+                        }
+                    }.onFailure {
+                        _navData.value = emptyList()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("ExploreViewModel", "Error in fetchNavDataForPeriod: ${e.message}", e)
+                _navData.value = emptyList()
+            }
+            _isLoadingGraph.value = false
+        }
+    }
+
 }
 
 data class SelectedFund(

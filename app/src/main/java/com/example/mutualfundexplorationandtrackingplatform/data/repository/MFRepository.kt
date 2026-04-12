@@ -7,11 +7,16 @@ import androidx.paging.PagingData
 import com.example.mutualfundexplorationandtrackingplatform.data.MutualFundPagingSource
 import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.MutualFundDAO
 import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
+import com.example.mutualfundexplorationandtrackingplatform.data.models.NavPoint
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.api.MutualFundApiService
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundDTO
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper.toEntity2
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper.toEntityWithCategory
 import kotlinx.coroutines.flow.Flow
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class MFRepository(private val mutualFundDAO: MutualFundDAO,
                    private val mutualFundApiService: MutualFundApiService
@@ -122,6 +127,20 @@ override suspend fun fetchAndCacheCategoryFunds(category: String): Result<List<M
         }
     }
 }
+
+    override suspend fun fetchNavData(
+        schemeCode: String,
+        startDate: String?,
+        endDate: String?
+    ): Result<List<NavPoint>> {
+        return try {
+            val response = mutualFundApiService.getNavData(schemeCode, startDate, endDate)
+            Result.success(response.data)
+        } catch (e: Exception) {
+            Log.e("MFRepository", "Error fetching NAV data: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
 
     override fun observeCategoryFunds(category: String): Flow<List<MutualFundDetail>> =
         mutualFundDAO.observeFundsByCategory(category)
