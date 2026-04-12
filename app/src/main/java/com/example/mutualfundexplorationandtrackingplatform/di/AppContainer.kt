@@ -6,9 +6,10 @@ import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.Watch
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.api.MutualFundApiService
 import com.example.mutualfundexplorationandtrackingplatform.data.repository.MutualFundRepository
 import com.example.mutualfundexplorationandtrackingplatform.data.repository.MutualFundRepositoryImpl
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 interface AppContainer {
     val mutualFundRepository: MutualFundRepository
@@ -18,8 +19,13 @@ interface AppContainer {
 class AppDataContainer(private val context: Context) : AppContainer {
     private val baseUrl = "https://api.mfapi.in/"
 
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
+
     private val retrofit = Retrofit.Builder()
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(json.asConverterFactory("application/json; charset=UTF8".toMediaType()))
         .baseUrl(baseUrl)
         .build()
 

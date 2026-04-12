@@ -94,16 +94,20 @@ fun MutualFundApp(
     val mutualFundRepository = app.container.mutualFundRepository
     val watchListDao = app.container.watchListDao
 
+    val factory = remember(mutualFundRepository, watchListDao) {
+        ViewModelFactory(mutualFundRepository, watchListDao)
+    }
+
     val exploreViewModel: ExploreViewModel = viewModel(
-        factory = ViewModelFactory(mutualFundRepository, watchListDao)
+        factory = factory
     )
 
     val searchViewModel: SearchViewModel = viewModel(
-        factory = ViewModelFactory(mutualFundRepository, watchListDao)
+        factory = factory
     )
 
     val watchlistViewModel: WatchlistViewModel = viewModel(
-        factory = ViewModelFactory(mutualFundRepository, watchListDao)
+        factory = factory
     )
 
     val selectedFund by exploreViewModel.selectedFund.collectAsStateWithLifecycle()

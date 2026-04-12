@@ -10,6 +10,7 @@ import com.example.mutualfundexplorationandtrackingplatform.data.repository.Mutu
 import com.example.mutualfundexplorationandtrackingplatform.ui.components.DetailFetchViewModel
 import com.example.mutualfundexplorationandtrackingplatform.ui.utils.CategoryUiState
 import com.example.mutualfundexplorationandtrackingplatform.ui.utils.DetailUiState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -74,7 +76,11 @@ class ExploreViewModel(
     private fun loadCategory(category: String, stateFlow: MutableStateFlow<CategoryUiState>) {
             viewModelScope.launch {
                 try {
-                    val result = mutualFundRepository.fetchAndCacheCategoryFunds(category)
+                    val result = withContext(Dispatchers.IO) {
+                        mutualFundRepository.fetchAndCacheCategoryFunds(
+                            category
+                        )
+                    }
                     result.onSuccess { funds ->
                         stateFlow.value = if (funds.isEmpty()) {
                             CategoryUiState.Empty
@@ -97,7 +103,10 @@ class ExploreViewModel(
 
         val job = viewModelScope.launch {
             try {
-                mutualFundRepository.fetchAndCacheDetails(schemeCode)
+                withContext(Dispatchers.IO){
+                    mutualFundRepository.fetchAndCacheDetails(schemeCode)
+                }
+
             } finally {
                 fetchNavJobs.remove(schemeCode)
             }
@@ -114,7 +123,6 @@ class ExploreViewModel(
     }
 
     private fun MutualFundDetail?.toDetailUiState(): DetailUiState {
-        Log.d("ViewModel", "toDetailUiStateeeeee hereeee: this=$this, detailsIsFetched=${this?.detailsIsFetched}, latestNav=${this?.latestNav}")
 
         return when {
             this == null -> DetailUiState.Loading

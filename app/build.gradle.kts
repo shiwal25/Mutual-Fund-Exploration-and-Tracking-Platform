@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -88,13 +89,10 @@ dependencies {
     implementation("androidx.sqlite:sqlite:2.6.2")
     implementation("androidx.sqlite:sqlite-ktx:2.6.2")
 
-// Retrofit
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
-// Retrofit with Scalar Converter
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
 
-    // Kotlin serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
@@ -103,11 +101,10 @@ dependencies {
     implementation("androidx.paging:paging-runtime-ktx:3.4.2")
     implementation("androidx.paging:paging-compose:3.4.2")
 
-    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
-//    implementation("androidx.multidex:multidex:2.0.1")
-
     // Vico Chart Library (Compose-native)
     implementation("com.patrykandpatrick.vico:compose:1.13.1")
     implementation("com.patrykandpatrick.vico:compose-m3:1.13.1")
     implementation("com.patrykandpatrick.vico:core:1.13.1")
+
+    debugImplementation ("com.squareup.leakcanary:leakcanary-android:2.14")
 }

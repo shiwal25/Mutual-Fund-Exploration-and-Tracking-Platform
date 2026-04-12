@@ -14,5 +14,6 @@ data class MutualFundDetail(
     val latestNavDate: String?,
     val isInGrowth:String?,
     val isInDivReinvestment:String?,
-    val detailsIsFetched: Boolean = false
+    val detailsIsFetched: Boolean = false,
+    val lastSyncEpoch: Long = 0L
 )

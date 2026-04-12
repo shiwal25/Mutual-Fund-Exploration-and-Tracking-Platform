@@ -54,4 +54,23 @@ interface MutualFundDAO {
     @Query("SELECT * FROM mutual_funds WHERE schemeCategory = :category ORDER BY schemeCode ASC")
     fun observeFundsByCategory(category: String): Flow<List<MutualFundDetail>>
 
+    /** Stamp the sync time for a single fund after a detail fetch. */
+    @Query("UPDATE mutual_funds SET lastSyncEpoch = :epoch WHERE schemeCode = :schemeCode")
+    suspend fun updateSyncTime(schemeCode: Int?, epoch: Long)
+
+    /**
+     * Stamp all funds in a category after a category fetch.
+     * Works for both new inserts (insertFunds + IGNORE won't update sync time) and
+     * re-synced existing rows.
+     */
+    @Query("UPDATE mutual_funds SET lastSyncEpoch = :epoch WHERE schemeCategory = :category")
+    suspend fun updateCategorySyncTime(category: String, epoch: Long)
+
+    /**
+     * The "freshness" of a category is limited by its oldest-synced member.
+     * If even one fund has lastSyncEpoch = 0, the whole category is considered stale.
+     */
+    @Query("SELECT MIN(lastSyncEpoch) FROM mutual_funds WHERE schemeCategory = :category")
+    suspend fun getOldestSyncForCategory(category: String): Long?
+
 }

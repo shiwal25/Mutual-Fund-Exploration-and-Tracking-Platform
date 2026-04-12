@@ -15,7 +15,7 @@ fun MutualFundDTO.toEntity(): MutualFundDetail {
         schemeCategory = null,
         latestNav = null,
         latestNavDate = null,
-        detailsIsFetched = false
+        detailsIsFetched = false,
     )
 }
 

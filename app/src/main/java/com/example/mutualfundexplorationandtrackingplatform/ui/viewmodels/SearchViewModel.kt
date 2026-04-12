@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.time.Duration.Companion.milliseconds
 
 class SearchViewModel(
     private val mutualFundRepository: MutualFundRepository
@@ -47,7 +48,7 @@ class SearchViewModel(
         }
 
         searchJob = viewModelScope.launch {
-            delay(300L)
+            delay(300L.milliseconds)
             performSearch(query)
         }
     }
