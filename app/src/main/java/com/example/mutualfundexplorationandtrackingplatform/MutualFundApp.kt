@@ -1,5 +1,6 @@
 package com.example.mutualfundexplorationandtrackingplatform
 
+import android.R.attr.type
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -35,12 +36,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.mutualfundexplorationandtrackingplatform.ui.components.ViewAllButton
 import com.example.mutualfundexplorationandtrackingplatform.ui.screens.AnalysisScreen
+import com.example.mutualfundexplorationandtrackingplatform.ui.screens.CategoryListScreen
 import com.example.mutualfundexplorationandtrackingplatform.ui.screens.ExploreScreen
 import com.example.mutualfundexplorationandtrackingplatform.ui.screens.ListScreen
 import com.example.mutualfundexplorationandtrackingplatform.ui.screens.SearchScreen
@@ -55,7 +59,8 @@ enum class MutualFundAppScreen (val route: String){
     Search("search"),
     WatchList("watchlist"),
     Funds("funds"),
-    Portfolio("portfolio")
+    Portfolio("portfolio"),
+    CategoryAllFunds("categoryAllFunds")
 }
 
 
@@ -67,9 +72,18 @@ fun MutualFundApp(
     var showBottomSheet by remember { mutableStateOf(false) }
 
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = MutualFundAppScreen.valueOf(
-        backStackEntry?.destination?.route ?: MutualFundAppScreen.Explore.name
-    )
+    val currentRoute = backStackEntry?.destination?.route ?: MutualFundAppScreen.Explore.name
+    val baseRoute = currentRoute.substringBefore("/")
+    val currentScreen = try {
+        MutualFundAppScreen.valueOf(baseRoute)
+    } catch (e: IllegalArgumentException) {
+        MutualFundAppScreen.Explore
+    }
+    val appBarTitle = if (currentScreen == MutualFundAppScreen.CategoryAllFunds) {
+        backStackEntry?.arguments?.getString("categoryName") ?: "All Funds"
+    } else {
+        currentScreen.name
+    }
     val context = LocalContext.current
     val app = context.applicationContext as MutualFundApplication
     val mutualFundRepository = app.container.mutualFundRepository
@@ -82,6 +96,7 @@ fun MutualFundApp(
         containerColor = Color.White,
         topBar = {
             AppBar(
+                title = appBarTitle,
                 canNavigateBack = navController.previousBackStackEntry != null,
                 currentScreen = currentScreen,
                 navigateUp = { navController.navigateUp() },
@@ -147,20 +162,37 @@ fun MutualFundApp(
             navController = navController,
             startDestination = MutualFundAppScreen.Explore.name
         ) {
-            if(true){
-                composable (MutualFundAppScreen.Explore.name) {
-                    ExploreScreen(
-                        modifier = Modifier.padding(innerPadding),
-                        viewModel = exploreViewModel,
-                        onSearchClick = { navController.navigate(MutualFundAppScreen.Search.name) },
-                        onFundSelected = { code, name ->
-                            exploreViewModel.selectFund(code, name)
-                            navController.navigate(MutualFundAppScreen.Analysis.name)
-                        }
-                    )
-                }
+            composable (MutualFundAppScreen.Explore.name) {
+                ExploreScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    viewModel = exploreViewModel,
+                    onSearchClick = { navController.navigate(MutualFundAppScreen.Search.name) },
+                    onFundSelected = { code, name ->
+                        exploreViewModel.selectFund(code, name)
+                        navController.navigate(MutualFundAppScreen.Analysis.name)
+                    },
+                    onViewAllClicked = { categoryName ->
+                        navController.navigate("${MutualFundAppScreen.CategoryAllFunds.name}/$categoryName")
+                    }
+                )
             }
 
+            composable (
+                route = "${MutualFundAppScreen.CategoryAllFunds.name}/{categoryName}",
+                arguments = listOf(navArgument("categoryName") { type = NavType.StringType })
+            ){ backStackEntry ->
+                val categoryName = backStackEntry.arguments?.getString("categoryName") ?: ""
+
+                CategoryListScreen(
+                    categoryName = categoryName,
+                    viewModel = exploreViewModel,
+                    modifier = Modifier.padding(innerPadding),
+                    onClick = { code, name ->
+                        exploreViewModel.selectFund(code, name)
+                        navController.navigate(MutualFundAppScreen.Analysis.name)
+                    }
+                )
+            }
 
             composable (MutualFundAppScreen.AllFunds.name) {
                 ListScreen(
@@ -217,6 +249,7 @@ fun MutualFundApp(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(
+    title:String,
     currentScreen: MutualFundAppScreen,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
@@ -226,7 +259,7 @@ fun AppBar(
 ) {
     Column{
         TopAppBar(
-            title = { Text(currentScreen.name, color = Color.Black) },
+            title = { Text(title, color = Color.Black) },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = Color.White,
                 titleContentColor = Color.Black,

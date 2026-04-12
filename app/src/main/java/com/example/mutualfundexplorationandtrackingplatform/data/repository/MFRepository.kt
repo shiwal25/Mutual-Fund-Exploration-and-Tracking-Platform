@@ -107,15 +107,14 @@ override suspend fun fetchAndCacheCategoryFunds(category: String): Result<List<M
         mutualFundDAO.insertFunds(entities)
         Log.d("MFRepository", "Inserted ${entities.size} entities to DB for category: $category")
         // Return from DB to get consistent data
-        val saved = mutualFundDAO.getFundsByCategory(category, limit = 4)
+        val saved = mutualFundDAO.getFundsByCategory(category)
         Log.d("MFRepository", "Retrieved ${saved.size} saved funds from DB for: $category")
 
         Result.success(saved)
     } catch (e: Exception) {
         Log.e("MFRepository", "Error fetching category $category: ${e.message}", e)
 
-        // Fallback to cached data
-        val cached = mutualFundDAO.getFundsByCategory(category, limit = 4)
+        val cached = mutualFundDAO.getFundsByCategory(category)
         if (cached.isNotEmpty()) {
             Result.success(cached)
         } else {

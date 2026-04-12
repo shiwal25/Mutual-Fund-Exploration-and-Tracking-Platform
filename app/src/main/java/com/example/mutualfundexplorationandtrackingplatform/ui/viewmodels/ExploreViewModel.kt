@@ -79,7 +79,7 @@ class ExploreViewModel(
                         CategoryUiState.Empty
                     } else {
                         Log.d("EVM", "loadCategory: sucesssssssssss")
-                        CategoryUiState.Success(funds.take(4)) // Max 4 items
+                        CategoryUiState.Success(funds)
                     }
                 }
                 .catch { e ->

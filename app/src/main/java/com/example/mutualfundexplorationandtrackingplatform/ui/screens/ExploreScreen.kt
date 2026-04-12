@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.rememberNavController
 import com.example.mutualfundexplorationandtrackingplatform.ui.components.ExploreScreenFunds
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.CategoryUiState
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ExploreViewModel
@@ -23,7 +24,8 @@ fun ExploreScreen(
     viewModel: ExploreViewModel,
     modifier: Modifier = Modifier,
     onSearchClick: () -> Unit,
-    onFundSelected: (Int?, String?) -> Unit
+    onFundSelected: (Int?, String?) -> Unit,
+    onViewAllClicked: (String) -> Unit
 ) {
     val indexFundsState by viewModel.indexFundsState.collectAsStateWithLifecycle()
     val bluechipFundsState by viewModel.bluechipFundsState.collectAsStateWithLifecycle()
@@ -36,7 +38,6 @@ fun ExploreScreen(
     Log.d("ExploreScreen", "  LargeCap: ${largeCapFundsState::class.simpleName} - $largeCapFundsState")
 
 
-//    var isComputed = false
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -77,7 +78,7 @@ fun ExploreScreen(
                         funds = state.funds,
                         title = "INDEX FUNDS",
                         viewModel = viewModel,
-                        onViewAllClick = { /* TODO */ },
+                        onViewAllClick = { onViewAllClicked("INDEX FUNDS") },
                         onFundSelected = { code, name ->
                             onFundSelected(code, name)
                         },
@@ -103,7 +104,7 @@ fun ExploreScreen(
                         funds = state.funds,
                         title = "BLUECHIP FUNDS",
                         viewModel = viewModel,
-                        onViewAllClick = { /* TODO */ },
+                        onViewAllClick = { onViewAllClicked("BLUECHIP FUNDS") },
                         onFundSelected = { code, name ->
                             onFundSelected(code, name)
                         },
@@ -121,7 +122,7 @@ fun ExploreScreen(
                         funds = state.funds,
                         title = "TAX FUNDS",
                         viewModel = viewModel,
-                        onViewAllClick = { /* TODO */ },
+                        onViewAllClick = { onViewAllClicked("TAX SAVER FUNDS") },
                         onFundSelected = { code, name ->
                             onFundSelected(code, name)
                         },
@@ -139,7 +140,7 @@ fun ExploreScreen(
                         funds = state.funds,
                         title = "LARGE CAP FUNDS",
                         viewModel = viewModel,
-                        onViewAllClick = { /* TODO */ },
+                        onViewAllClick = { onViewAllClicked("LARGE CAP FUNDS") },
                         onFundSelected = { code, name ->
                             onFundSelected(code, name)
                         },

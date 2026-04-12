@@ -48,10 +48,10 @@ interface MutualFundDAO {
     @Query("SELECT * FROM mutual_funds LIMIT :limit OFFSET :offset")
     suspend fun getAllFunds(limit: Int, offset: Int): List<MutualFundDetail>
 
-    @Query("SELECT * FROM mutual_funds WHERE schemeCategory = :category ORDER BY schemeCode ASC LIMIT :limit")
-    suspend fun getFundsByCategory(category: String, limit: Int = 4): List<MutualFundDetail>
+    @Query("SELECT * FROM mutual_funds WHERE schemeCategory = :category ORDER BY schemeCode ASC")
+    suspend fun getFundsByCategory(category: String): List<MutualFundDetail>
 
-    @Query("SELECT * FROM mutual_funds WHERE schemeCategory = :category ORDER BY schemeCode ASC LIMIT 4")
+    @Query("SELECT * FROM mutual_funds WHERE schemeCategory = :category ORDER BY schemeCode ASC")
     fun observeFundsByCategory(category: String): Flow<List<MutualFundDetail>>
 
 }
