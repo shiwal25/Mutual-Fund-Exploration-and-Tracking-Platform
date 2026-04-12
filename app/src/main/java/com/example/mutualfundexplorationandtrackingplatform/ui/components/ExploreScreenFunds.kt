@@ -24,7 +24,8 @@ fun ExploreScreenFunds(
     title: String,
     viewModel: ExploreViewModel,
     onViewAllClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onFundSelected: (Int?, String?) -> Unit
 ) {
     Column(
         modifier = modifier.padding(vertical = 8.dp)
@@ -74,7 +75,9 @@ fun ExploreScreenFunds(
                 FundCard(
                     fund = fund,
                     viewModel = viewModel,
-                    onClick = { /* TODO: Navigate to fund detail */ },
+                    onClick = { code, name ->
+                        onFundSelected(code, name)
+                    },
                     modifier = Modifier.padding(4.dp)
                 )
             }

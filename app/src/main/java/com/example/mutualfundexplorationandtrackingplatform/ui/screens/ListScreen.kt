@@ -27,7 +27,7 @@ import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.Explor
 @Composable
 fun ListScreen(
     viewModel: ExploreViewModel,
-    onClick: () -> Unit,
+    onClick: (Int?, String?) -> Unit,
     modifier:Modifier
 ){
     val lazyPagingItems = viewModel.mutalFundPagingFlow.collectAsLazyPagingItems()
@@ -42,7 +42,9 @@ fun ListScreen(
                 schemeCode = item.schemeCode,
                 schemeName = item.schemeName,
                 viewModel = viewModel,
-                onClick = onClick,
+                onClick = { code, name ->
+                    onClick(code, name)
+                },
                 modifier = Modifier.padding(8.dp)
             )
         }

@@ -35,7 +35,7 @@ fun listScreenItem(
     schemeCode: Int?,
     schemeName: String?,
     viewModel: ExploreViewModel,
-    onClick: () -> Unit,
+    onClick: (Int?, String?) -> Unit,
     modifier: Modifier = Modifier
 ){
     val detailState by viewModel
@@ -51,7 +51,9 @@ fun listScreenItem(
         modifier = modifier
             .fillMaxWidth()
             .border(BorderStroke(2.dp, Color.Black), RoundedCornerShape(4.dp))
-            .clickable(onClick = onClick)
+            .clickable {
+                onClick(schemeCode, schemeName)
+            }
             .padding(12.dp)
     ) {
         Row(

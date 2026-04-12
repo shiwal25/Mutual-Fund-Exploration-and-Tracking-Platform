@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -22,6 +24,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,6 +63,9 @@ enum class MutualFundAppScreen (val route: String){
 fun MutualFundApp(
     navController: NavHostController = rememberNavController(),
 ){
+
+    var showBottomSheet by remember { mutableStateOf(false) }
+
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = MutualFundAppScreen.valueOf(
         backStackEntry?.destination?.route ?: MutualFundAppScreen.Explore.name
@@ -78,6 +86,11 @@ fun MutualFundApp(
                 currentScreen = currentScreen,
                 navigateUp = { navController.navigateUp() },
                 onClick = {navController.navigate(MutualFundAppScreen.AllFunds.name)},
+                onBookmarkClick = {
+                    if (currentScreen == MutualFundAppScreen.Analysis) {
+                        showBottomSheet = true
+                    }
+                }
             )
         },
         bottomBar = {
@@ -139,7 +152,11 @@ fun MutualFundApp(
                     ExploreScreen(
                         modifier = Modifier.padding(innerPadding),
                         viewModel = exploreViewModel,
-                        onSearchClick = { navController.navigate(MutualFundAppScreen.Search.name) }
+                        onSearchClick = { navController.navigate(MutualFundAppScreen.Search.name) },
+                        onFundSelected = { code, name ->
+                            exploreViewModel.selectFund(code, name)
+                            navController.navigate(MutualFundAppScreen.Analysis.name)
+                        }
                     )
                 }
             }
@@ -148,14 +165,20 @@ fun MutualFundApp(
             composable (MutualFundAppScreen.AllFunds.name) {
                 ListScreen(
                     viewModel = exploreViewModel,
-                    { navController.navigate(MutualFundAppScreen.Analysis.name) },
+                    { code, name ->
+                        exploreViewModel.selectFund(code, name)
+                        navController.navigate(MutualFundAppScreen.Analysis.name)
+                    },
                     modifier = Modifier.padding(innerPadding),
                 )
             }
 
             composable (MutualFundAppScreen.Analysis.name) {
-                AnalysisScreen("","","","","",
+                AnalysisScreen(
+                    viewModel= exploreViewModel,
                     modifier = Modifier.padding(innerPadding),
+                    showBottomSheet = showBottomSheet,
+                    onDismissBottomSheet = { showBottomSheet = false }
                 )
             }
 
@@ -199,11 +222,12 @@ fun AppBar(
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
+    onBookmarkClick: () -> Unit = {}
 ) {
     Column{
         TopAppBar(
             title = { Text(currentScreen.name, color = Color.Black) },
-            colors = TopAppBarDefaults.mediumTopAppBarColors(
+            colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = Color.White,
                 titleContentColor = Color.Black,
                 navigationIconContentColor = Color.Black,
@@ -213,7 +237,7 @@ fun AppBar(
                 if (canNavigateBack) {
                     IconButton(onClick = navigateUp) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back_button)
                         )
                     }
@@ -222,6 +246,15 @@ fun AppBar(
             actions = {
                 if (currentScreen == MutualFundAppScreen.Explore) {
                     ViewAllButton(onClick)
+                }
+
+                if (currentScreen == MutualFundAppScreen.Analysis) {
+                    IconButton(onClick = onBookmarkClick) {
+                        Icon(
+                            imageVector = Icons.Filled.BookmarkBorder,
+                            contentDescription = "Bookmark Mutual Fund"
+                        )
+                    }
                 }
             },
         )

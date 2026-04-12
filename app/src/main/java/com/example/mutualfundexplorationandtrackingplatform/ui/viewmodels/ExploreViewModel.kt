@@ -43,11 +43,18 @@ class ExploreViewModel(
     private val _largeCapFundsState = MutableStateFlow<CategoryUiState>(CategoryUiState.Loading)
     val largeCapFundsState: StateFlow<CategoryUiState> = _largeCapFundsState.asStateFlow()
 
+    private val _selectedFund = MutableStateFlow<SelectedFund?>(null)
+    val selectedFund: StateFlow<SelectedFund?> = _selectedFund.asStateFlow()
+
+    fun selectFund(schemeCode: Int?, schemeName: String?) {
+        _selectedFund.value = SelectedFund(schemeCode, schemeName)
+    }
+
     private fun loadAllCategories() {
-        loadCategory("indexfunds", _indexFundsState)
-        loadCategory("bluechip", _bluechipFundsState)
-        loadCategory("tax", _taxFundsState)
-        loadCategory("largecap", _largeCapFundsState)
+        loadCategory("Index Funds", _indexFundsState)
+        loadCategory("BlueChip", _bluechipFundsState)
+        loadCategory("Tax Savers (ELSS)", _taxFundsState)
+        loadCategory("Large Cap", _largeCapFundsState)
     }
 
     init {
@@ -65,7 +72,6 @@ class ExploreViewModel(
 
         viewModelScope.launch {
             Log.d("ExploreViewModel", "Starting DB observation for: $category")
-            // First, observe database for real-time updates
             mutualFundRepository.observeCategoryFunds(category)
                 .map { funds ->
                     Log.d("ExploreViewModel", "DB returned ${funds.size} funds for $category")
@@ -86,27 +92,24 @@ class ExploreViewModel(
                 }
         }
 
-        // Trigger API fetch in background
-        viewModelScope.launch {
-            try {
-                // 1. Call API, save to DB, return saved data
-                val result = mutualFundRepository.fetchAndCacheCategoryFunds(category)
+            viewModelScope.launch {
+                try {
+                    val result = mutualFundRepository.fetchAndCacheCategoryFunds(category)
 
-                // 2. Update UI once and stop
-                result.onSuccess { funds ->
-                    stateFlow.value = if (funds.isEmpty()) {
-                        CategoryUiState.Empty
-                    } else {
-                        CategoryUiState.Success(funds) // Already limited to 4 in repository
+                    result.onSuccess { funds ->
+                        stateFlow.value = if (funds.isEmpty()) {
+                            CategoryUiState.Empty
+                        } else {
+                            CategoryUiState.Success(funds)
+                        }
+                    }.onFailure { e ->
+                        stateFlow.value = CategoryUiState.Error(e.message ?: "Failed to load funds")
                     }
-                }.onFailure { e ->
-                    stateFlow.value = CategoryUiState.Error(e.message ?: "Failed to load funds")
+                } catch (e: Exception) {
+                    stateFlow.value = CategoryUiState.Error(e.message ?: "Unknown error")
                 }
-            } catch (e: Exception) {
-                stateFlow.value = CategoryUiState.Error(e.message ?: "Unknown error")
             }
         }
-    }
 
     private val inFlightJobs = ConcurrentHashMap<Int, Job>()
 
@@ -139,13 +142,21 @@ class ExploreViewModel(
         Log.d("ViewModel", "toDetailUiState: this=$this, detailsIsFetched=${this?.detailsIsFetched}, latestNav=${this?.latestNav}")
 
         return when {
-            this == null              -> DetailUiState.Loading
-            !detailsIsFetched         -> DetailUiState.Loading
+            this == null -> DetailUiState.Loading
+            !detailsIsFetched -> DetailUiState.Loading
             schemeCode != null && schemeName != null -> {
                 Log.d("ViewModel", "Returning Loaded state with nav=$latestNav")
-                DetailUiState.Loaded(schemeCode, schemeName, latestNav)
+                DetailUiState.Loaded(schemeCode, schemeName, latestNav, schemeCategory)
             }
-            else                      -> DetailUiState.Error
+            else -> DetailUiState.Error
         }
     }
 }
+
+data class SelectedFund(
+    val schemeCode: Int?,
+    val schemeName: String?,
+    val schemeCategory: String? = null,
+    val description: String? = null,
+    val growthPercentage: String? = null
+)

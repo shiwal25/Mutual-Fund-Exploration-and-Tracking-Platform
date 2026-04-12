@@ -28,7 +28,7 @@ import kotlinx.coroutines.delay
 fun FundCard(
     fund: MutualFundDetail,
     viewModel: ExploreViewModel,
-    onClick: () -> Unit,
+    onClick: (Int?, String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val schemeCode = fund.schemeCode
@@ -49,7 +49,7 @@ fun FundCard(
                 border = BorderStroke(2.dp, Color.Black),
                 shape = RoundedCornerShape(4.dp)
             )
-            .clickable(onClick = onClick)
+            .clickable{onClick(fund.schemeCode, fund.schemeName)}
             .padding(16.dp)
     ) {
         Column(

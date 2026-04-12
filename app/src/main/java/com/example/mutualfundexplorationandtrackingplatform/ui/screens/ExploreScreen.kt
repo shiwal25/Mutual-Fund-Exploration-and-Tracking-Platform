@@ -22,7 +22,8 @@ import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.Explor
 fun ExploreScreen(
     viewModel: ExploreViewModel,
     modifier: Modifier = Modifier,
-    onSearchClick: () -> Unit
+    onSearchClick: () -> Unit,
+    onFundSelected: (Int?, String?) -> Unit
 ) {
     val indexFundsState by viewModel.indexFundsState.collectAsStateWithLifecycle()
     val bluechipFundsState by viewModel.bluechipFundsState.collectAsStateWithLifecycle()
@@ -76,7 +77,10 @@ fun ExploreScreen(
                         funds = state.funds,
                         title = "INDEX FUNDS",
                         viewModel = viewModel,
-                        onViewAllClick = { /* TODO */ }
+                        onViewAllClick = { /* TODO */ },
+                        onFundSelected = { code, name ->
+                            onFundSelected(code, name)
+                        },
                     )
                 }
             }
@@ -99,13 +103,15 @@ fun ExploreScreen(
                         funds = state.funds,
                         title = "BLUECHIP FUNDS",
                         viewModel = viewModel,
-                        onViewAllClick = { /* TODO */ }
+                        onViewAllClick = { /* TODO */ },
+                        onFundSelected = { code, name ->
+                            onFundSelected(code, name)
+                        },
                     )
                 }
             }
             is CategoryUiState.Loading -> {}
             is CategoryUiState.Empty, is CategoryUiState.Error -> {}
-            else -> {}
         }
 
         when (val state = taxFundsState) {
@@ -115,13 +121,15 @@ fun ExploreScreen(
                         funds = state.funds,
                         title = "TAX FUNDS",
                         viewModel = viewModel,
-                        onViewAllClick = { /* TODO */ }
+                        onViewAllClick = { /* TODO */ },
+                        onFundSelected = { code, name ->
+                            onFundSelected(code, name)
+                        },
                     )
                 }
             }
             is CategoryUiState.Loading -> {}
             is CategoryUiState.Empty, is CategoryUiState.Error -> {}
-            else -> {}
         }
 
         when (val state = largeCapFundsState) {
@@ -131,13 +139,15 @@ fun ExploreScreen(
                         funds = state.funds,
                         title = "LARGE CAP FUNDS",
                         viewModel = viewModel,
-                        onViewAllClick = { /* TODO */ }
+                        onViewAllClick = { /* TODO */ },
+                        onFundSelected = { code, name ->
+                            onFundSelected(code, name)
+                        },
                     )
                 }
             }
             is CategoryUiState.Loading -> {}
             is CategoryUiState.Empty, is CategoryUiState.Error -> {}
-            else -> {}
         }
     }
 }
