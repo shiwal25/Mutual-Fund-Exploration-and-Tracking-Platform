@@ -1,6 +1,7 @@
 package com.example.mutualfundexplorationandtrackingplatform.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -91,8 +92,12 @@ fun ExploreScreen(
                 }
             }
             is CategoryUiState.Loading -> {
-                CircularProgressIndicator()
-            }
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }            }
             is CategoryUiState.Empty -> {
                 //Not shoiwng the category if empty
             }
@@ -117,7 +122,12 @@ fun ExploreScreen(
                 }
             }
             is CategoryUiState.Loading -> {
-                CircularProgressIndicator()
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
             is CategoryUiState.Empty -> {
                 //Not shoiwng the category if empty
@@ -142,7 +152,12 @@ fun ExploreScreen(
                 }
             }
             is CategoryUiState.Loading -> {
-                CircularProgressIndicator()
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
             is CategoryUiState.Empty -> {
                 //Not shoiwng the category if empty
@@ -167,7 +182,12 @@ fun ExploreScreen(
                 }
             }
             is CategoryUiState.Loading -> {
-                CircularProgressIndicator()
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
             is CategoryUiState.Empty -> {
                 //Not shoiwng the category if empty
