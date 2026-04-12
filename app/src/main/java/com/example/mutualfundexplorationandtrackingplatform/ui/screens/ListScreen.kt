@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,7 +32,7 @@ fun ListScreen(
 ){
     val lazyPagingItems = viewModel.mutalFundPagingFlow.collectAsLazyPagingItems()
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(modifier = modifier.fillMaxSize().padding(8.dp)) {
         items(
             count    = lazyPagingItems.itemCount,
             key      = lazyPagingItems.itemKey { it.schemeCode!! }
@@ -40,7 +42,8 @@ fun ListScreen(
                 schemeCode = item.schemeCode,
                 schemeName = item.schemeName,
                 viewModel = viewModel,
-                {}
+                onClick = onClick,
+                modifier = Modifier.padding(8.dp)
             )
         }
 
@@ -48,7 +51,7 @@ fun ListScreen(
             when (val append = lazyPagingItems.loadState.append) {
                 is LoadState.Loading -> {
                     Box(
-                        modifier          = Modifier
+                        modifier = modifier
                             .fillMaxWidth()
                             .padding(16.dp),
                         contentAlignment  = Alignment.Center
@@ -58,15 +61,16 @@ fun ListScreen(
                 }
                 is LoadState.Error -> {
                     Box(
-                        modifier         = Modifier
+                        modifier = modifier
                             .fillMaxWidth()
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Column(modifier = modifier.fillMaxWidth(),horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("Failed to load more", color = MaterialTheme.colorScheme.error)
                             Spacer(Modifier.height(8.dp))
-                            Button(onClick = { lazyPagingItems.retry() }) {
+                            OutlinedButton(onClick = { lazyPagingItems.retry() },
+                                shape = RoundedCornerShape(8.dp)) {
                                 Text("Retry")
                             }
                         }
@@ -79,19 +83,22 @@ fun ListScreen(
 
     when (val refresh = lazyPagingItems.loadState.refresh) {
         is LoadState.Loading -> {
-            CircularProgressIndicator(modifier = Modifier)
+            Box(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment  = Alignment.Center
+            ) {
+                CircularProgressIndicator(strokeWidth = 2.dp)
+            }
         }
         is LoadState.Error -> {
             Column(
-                modifier          = Modifier,
+                modifier = modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text  = refresh.error.localizedMessage ?: "Unknown error",
-                    color = MaterialTheme.colorScheme.error
-                )
-                Spacer(Modifier.height(12.dp))
-                Button(onClick = { lazyPagingItems.refresh() }) {
+                OutlinedButton(onClick = { lazyPagingItems.retry() },
+                    shape = RoundedCornerShape(8.dp)) {
                     Text("Retry")
                 }
             }

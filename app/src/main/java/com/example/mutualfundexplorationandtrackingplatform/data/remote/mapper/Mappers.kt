@@ -14,7 +14,7 @@ fun MutualFundDTO.toEntity(): MutualFundDetail {
         schemeCategory = null,
         latestNav = null,
         latestNavDate = null,
-        detailsIsFetched = false  // Important!
+        detailsIsFetched = false
     )
 }
 
@@ -34,5 +34,20 @@ fun MutualFundDetail.toDTO(): MutualFundDTO {
         schemeCategory = schemeCategory,
         latestNav = latestNav,
         latestNavDate = latestNavDate
+    )
+}
+
+fun MutualFundDTO.toEntityWithCategory(category: String): MutualFundDetail {
+    return MutualFundDetail(
+        schemeCode = schemeCode,
+        schemeName = schemeName,
+        isInGrowth = isInGrowth,
+        isInDivReinvestment = isInDivReinvestment,
+        fundHouse = null,
+        schemeType = null,
+        schemeCategory = category,
+        latestNav = null,
+        latestNavDate = null,
+        detailsIsFetched = false
     )
 }

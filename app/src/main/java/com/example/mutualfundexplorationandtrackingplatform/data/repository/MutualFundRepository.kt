@@ -12,4 +12,8 @@ interface MutualFundRepository {
     suspend fun fetchAndCacheDetails(schemeCode: Int?): Result<MutualFundDetail>
 
     fun observeFundByschemeCode(schemeCode: Int?): Flow<MutualFundDetail?>
+
+    suspend fun fetchAndCacheCategoryFunds(category: String): Result<List<MutualFundDetail>>
+
+    fun observeCategoryFunds(category: String): Flow<List<MutualFundDetail>>
 }

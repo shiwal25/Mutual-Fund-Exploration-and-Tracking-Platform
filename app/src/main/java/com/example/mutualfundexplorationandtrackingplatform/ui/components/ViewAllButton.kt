@@ -4,6 +4,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -13,7 +14,8 @@ fun ViewAllButton(onClick: () -> Unit) {
         shape = RoundedCornerShape(8.dp)
     ) {
         Text(
-            text = "View All >"
+            text = "View All >",
+            color = Color.Black
         )
     }
 }

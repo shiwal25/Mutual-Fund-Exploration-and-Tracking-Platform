@@ -19,7 +19,6 @@ interface MutualFundDAO {
         UPDATE mutual_funds
         SET fundHouse = :fundHouse,
             schemeType = :schemeType,
-            schemeCategory = :schemeCategory,
             latestNav = :latestNav,
             latestNavDate = :latestNavDate,
             isInGrowth = :isInGrowth,
@@ -32,7 +31,7 @@ interface MutualFundDAO {
         schemeCode: Int?,
         fundHouse: String?,
         schemeType: String?,
-        schemeCategory: String?,
+//        schemeCategory: String?,
         latestNav: String?,
         latestNavDate: String?,
         isInGrowth: String?,
@@ -48,5 +47,11 @@ interface MutualFundDAO {
 
     @Query("SELECT * FROM mutual_funds LIMIT :limit OFFSET :offset")
     suspend fun getAllFunds(limit: Int, offset: Int): List<MutualFundDetail>
+
+    @Query("SELECT * FROM mutual_funds WHERE schemeCategory = :category ORDER BY schemeCode ASC LIMIT :limit")
+    suspend fun getFundsByCategory(category: String, limit: Int = 4): List<MutualFundDetail>
+
+    @Query("SELECT * FROM mutual_funds WHERE schemeCategory = :category ORDER BY schemeCode ASC LIMIT 4")
+    fun observeFundsByCategory(category: String): Flow<List<MutualFundDetail>>
 
 }

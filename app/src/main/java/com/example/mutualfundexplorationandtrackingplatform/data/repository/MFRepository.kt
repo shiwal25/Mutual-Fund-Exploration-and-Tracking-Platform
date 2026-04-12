@@ -10,6 +10,7 @@ import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.Mu
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.api.MutualFundApiService
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundDTO
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper.toEntity2
+import com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper.toEntityWithCategory
 import kotlinx.coroutines.flow.Flow
 
 class MFRepository(private val mutualFundDAO: MutualFundDAO,
@@ -51,7 +52,7 @@ class MFRepository(private val mutualFundDAO: MutualFundDAO,
                 schemeCode = schemeCode,
                 fundHouse = entity.fundHouse,
                 schemeType = entity.schemeType,
-                schemeCategory = entity.schemeCategory,
+//                schemeCategory = entity.schemeCategory,
                 latestNav = entity.latestNav,
                 latestNavDate = entity.latestNavDate,
                 isInGrowth = entity.isInGrowth,
@@ -77,4 +78,52 @@ class MFRepository(private val mutualFundDAO: MutualFundDAO,
 
     override fun observeFundByschemeCode(schemeCode: Int?): Flow<MutualFundDetail?> =
         mutualFundDAO.observeFundByScheme(schemeCode)
+
+override suspend fun fetchAndCacheCategoryFunds(category: String): Result<List<MutualFundDetail>> {
+    Log.d("MFRepository", "fetchAndCacheCategoryFunds called for: $category")
+    return try {
+        // Map query parameter to API search term
+        val searchQuery = when(category) {
+            "indexfunds" -> "index"
+            "bluechip" -> "bluechip"
+            "tax" -> "tax"
+            "largecap" -> "large cap"
+            else -> category
+        }
+
+        val dtos = mutualFundApiService.getFundsByCategory(searchQuery)
+        Log.d("MFRepository", "API returned ${dtos.size} DTOs for searchQuery: $searchQuery")
+
+        if (dtos.isEmpty()) {
+            Log.d("MFRepository", "Empty result for $category, returning empty list")
+
+            return Result.success(emptyList())
+        }
+
+        // Convert to entities with category
+        val entities = dtos.map { it.toEntityWithCategory(category) }
+
+        // Save to database
+        mutualFundDAO.insertFunds(entities)
+        Log.d("MFRepository", "Inserted ${entities.size} entities to DB for category: $category")
+        // Return from DB to get consistent data
+        val saved = mutualFundDAO.getFundsByCategory(category, limit = 4)
+        Log.d("MFRepository", "Retrieved ${saved.size} saved funds from DB for: $category")
+
+        Result.success(saved)
+    } catch (e: Exception) {
+        Log.e("MFRepository", "Error fetching category $category: ${e.message}", e)
+
+        // Fallback to cached data
+        val cached = mutualFundDAO.getFundsByCategory(category, limit = 4)
+        if (cached.isNotEmpty()) {
+            Result.success(cached)
+        } else {
+            Result.failure(e)
+        }
     }
+}
+
+    override fun observeCategoryFunds(category: String): Flow<List<MutualFundDetail>> =
+        mutualFundDAO.observeFundsByCategory(category)
+}

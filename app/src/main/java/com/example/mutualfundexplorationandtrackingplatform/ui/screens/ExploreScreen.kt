@@ -1,38 +1,52 @@
 package com.example.mutualfundexplorationandtrackingplatform.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import android.util.Log
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.mutualfundexplorationandtrackingplatform.ui.components.ExploreScreenFunds
+import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.CategoryUiState
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ExploreViewModel
 
 @Composable
 fun ExploreScreen(
-    modifier:Modifier,
-                  onClick: () -> Unit
+    viewModel: ExploreViewModel,
+    modifier: Modifier = Modifier,
+    onSearchClick: () -> Unit
 ) {
-    Column(modifier.padding(4.dp)) {
+    val indexFundsState by viewModel.indexFundsState.collectAsStateWithLifecycle()
+    val bluechipFundsState by viewModel.bluechipFundsState.collectAsStateWithLifecycle()
+    val taxFundsState by viewModel.taxFundsState.collectAsStateWithLifecycle()
+    val largeCapFundsState by viewModel.largeCapFundsState.collectAsStateWithLifecycle()
+    Log.d("ExploreScreen", "Collected states:")
+    Log.d("ExploreScreen", "  Index: ${indexFundsState::class.simpleName} - $indexFundsState")
+    Log.d("ExploreScreen", "  Bluechip: ${bluechipFundsState::class.simpleName} - $bluechipFundsState")
+    Log.d("ExploreScreen", "  Tax: ${taxFundsState::class.simpleName} - $taxFundsState")
+    Log.d("ExploreScreen", "  LargeCap: ${largeCapFundsState::class.simpleName} - $largeCapFundsState")
+
+
+//    var isComputed = false
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(vertical = 4.dp)
+    ) {
         OutlinedButton(
-            onClick = onClick,
+            onClick = onSearchClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(16.dp),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = Color.Gray
@@ -55,13 +69,75 @@ fun ExploreScreen(
             }
         }
 
-        /*TODO now common composables for each and every funds*/
-//        if(indexFunds != null){
-//            ExploreScreenFunds(indexFunds, INDEX FUNDS, {})
-//        }
-//        if(BluechipFunds != null){
-//            ExploreScreenFunds(indexFunds, BLUECHIP FUNDS, {})
-//        }if(taxFunds != null){
-//        ExploreScreenFunds(indexFunds, TAX FUNDS, {})
+        when (val state = indexFundsState) {
+            is CategoryUiState.Success -> {
+                if (state.funds.isNotEmpty()) {
+                    ExploreScreenFunds(
+                        funds = state.funds,
+                        title = "INDEX FUNDS",
+                        viewModel = viewModel,
+                        onViewAllClick = { /* TODO */ }
+                    )
+                }
+            }
+            is CategoryUiState.Loading -> {
+                // Show loading indicator
+            }
+            is CategoryUiState.Empty -> {
+                // Show empty state
+            }
+            is CategoryUiState.Error -> {
+                Text("Error: ${state.message}")
+            }
+        }
+
+
+        when (val state = bluechipFundsState) {
+            is CategoryUiState.Success -> {
+                if (state.funds.isNotEmpty()) {
+                    ExploreScreenFunds(
+                        funds = state.funds,
+                        title = "BLUECHIP FUNDS",
+                        viewModel = viewModel,
+                        onViewAllClick = { /* TODO */ }
+                    )
+                }
+            }
+            is CategoryUiState.Loading -> {}
+            is CategoryUiState.Empty, is CategoryUiState.Error -> {}
+            else -> {}
+        }
+
+        when (val state = taxFundsState) {
+            is CategoryUiState.Success -> {
+                if (state.funds.isNotEmpty()) {
+                    ExploreScreenFunds(
+                        funds = state.funds,
+                        title = "TAX FUNDS",
+                        viewModel = viewModel,
+                        onViewAllClick = { /* TODO */ }
+                    )
+                }
+            }
+            is CategoryUiState.Loading -> {}
+            is CategoryUiState.Empty, is CategoryUiState.Error -> {}
+            else -> {}
+        }
+
+        when (val state = largeCapFundsState) {
+            is CategoryUiState.Success -> {
+                if (state.funds.isNotEmpty()) {
+                    ExploreScreenFunds(
+                        funds = state.funds,
+                        title = "LARGE CAP FUNDS",
+                        viewModel = viewModel,
+                        onViewAllClick = { /* TODO */ }
+                    )
+                }
+            }
+            is CategoryUiState.Loading -> {}
+            is CategoryUiState.Empty, is CategoryUiState.Error -> {}
+            else -> {}
+        }
     }
 }

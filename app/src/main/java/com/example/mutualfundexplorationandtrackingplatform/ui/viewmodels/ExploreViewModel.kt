@@ -9,15 +9,104 @@ import com.example.mutualfundexplorationandtrackingplatform.data.repository.Mutu
 import com.example.mutualfundexplorationandtrackingplatform.ui.utils.DetailUiState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
 
-class ExploreViewModel(    private val mutualFundRepository: MutualFundRepository
+sealed class CategoryUiState {
+    object Loading : CategoryUiState()
+    data class Success(val funds: List<MutualFundDetail>) : CategoryUiState()
+    data class Error(val message: String) : CategoryUiState()
+    object Empty : CategoryUiState()
+}
+
+class ExploreViewModel(
+    private val mutualFundRepository: MutualFundRepository
 ): ViewModel() {
 
     val mutalFundPagingFlow = mutualFundRepository.mutalFundPagingFlow
         .cachedIn(viewModelScope)
+
+    private val _indexFundsState = MutableStateFlow<CategoryUiState>(CategoryUiState.Loading)
+    val indexFundsState: StateFlow<CategoryUiState> = _indexFundsState.asStateFlow()
+
+    private val _bluechipFundsState = MutableStateFlow<CategoryUiState>(CategoryUiState.Loading)
+    val bluechipFundsState: StateFlow<CategoryUiState> = _bluechipFundsState.asStateFlow()
+
+    private val _taxFundsState = MutableStateFlow<CategoryUiState>(CategoryUiState.Loading)
+    val taxFundsState: StateFlow<CategoryUiState> = _taxFundsState.asStateFlow()
+
+    private val _largeCapFundsState = MutableStateFlow<CategoryUiState>(CategoryUiState.Loading)
+    val largeCapFundsState: StateFlow<CategoryUiState> = _largeCapFundsState.asStateFlow()
+
+    private fun loadAllCategories() {
+        loadCategory("indexfunds", _indexFundsState)
+        loadCategory("bluechip", _bluechipFundsState)
+        loadCategory("tax", _taxFundsState)
+        loadCategory("largecap", _largeCapFundsState)
+    }
+
+    init {
+        Log.d("ExploreViewModel", "ViewModel initialized, starting loadAllCategories()")
+        try {
+            Log.d("ExploreViewModel", "ViewModel initialized")
+            loadAllCategories()
+        } catch (e: Exception) {
+            Log.e("ExploreViewModel", "Error in init: ${e.message}", e)
+        }
+    }
+
+    private fun loadCategory(category: String, stateFlow: MutableStateFlow<CategoryUiState>) {
+        Log.d("ExploreViewModel", "loadCategory called for: $category")
+
+        viewModelScope.launch {
+            Log.d("ExploreViewModel", "Starting DB observation for: $category")
+            // First, observe database for real-time updates
+            mutualFundRepository.observeCategoryFunds(category)
+                .map { funds ->
+                    Log.d("ExploreViewModel", "DB returned ${funds.size} funds for $category")
+                    if (funds.isEmpty()) {
+                        CategoryUiState.Empty
+                    } else {
+                        Log.d("EVM", "loadCategory: sucesssssssssss")
+                        CategoryUiState.Success(funds.take(4)) // Max 4 items
+                    }
+                }
+                .catch { e ->
+                    Log.e("ExploreViewModel", "Error observing $category: ${e.message}", e)
+                    emit(CategoryUiState.Error(e.message ?: "Unknown error"))
+                }
+                .collect { state ->
+                    Log.d("ExploreViewModel", "Emitting state for $category: $state")
+                    stateFlow.value = state
+                }
+        }
+
+        // Trigger API fetch in background
+        viewModelScope.launch {
+            try {
+                // 1. Call API, save to DB, return saved data
+                val result = mutualFundRepository.fetchAndCacheCategoryFunds(category)
+
+                // 2. Update UI once and stop
+                result.onSuccess { funds ->
+                    stateFlow.value = if (funds.isEmpty()) {
+                        CategoryUiState.Empty
+                    } else {
+                        CategoryUiState.Success(funds) // Already limited to 4 in repository
+                    }
+                }.onFailure { e ->
+                    stateFlow.value = CategoryUiState.Error(e.message ?: "Failed to load funds")
+                }
+            } catch (e: Exception) {
+                stateFlow.value = CategoryUiState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
 
     private val inFlightJobs = ConcurrentHashMap<Int, Job>()
 
@@ -34,18 +123,26 @@ class ExploreViewModel(    private val mutualFundRepository: MutualFundRepositor
         inFlightJobs[schemeCode as Int] = job
     }
 
-    fun getDetailFlow(schemeCode: Int?): Flow<DetailUiState> =
-        mutualFundRepository.observeFundByschemeCode(schemeCode)
-            .map { entity -> entity.toDetailUiState() }
+    fun getDetailFlow(schemeCode: Int?): Flow<DetailUiState> {
+        return mutualFundRepository.observeFundByschemeCode(schemeCode)
+            .map { fund -> fund.toDetailUiState() }
+            .catch { e ->
+                emit(DetailUiState.Error)
+            }
+    }
+
+    fun refresh() {
+        loadAllCategories()
+    }
 
     private fun MutualFundDetail?.toDetailUiState(): DetailUiState {
-        Log.d("ViewModel", "toDetailUiState: this=$this, detailsIsFetched=${this?.detailsIsFetched}, latestNav=${this?.latestNav}")  // ADD THIS
+        Log.d("ViewModel", "toDetailUiState: this=$this, detailsIsFetched=${this?.detailsIsFetched}, latestNav=${this?.latestNav}")
 
         return when {
             this == null              -> DetailUiState.Loading
             !detailsIsFetched         -> DetailUiState.Loading
             schemeCode != null && schemeName != null -> {
-                Log.d("ViewModel", "Returning Loaded state with nav=$latestNav")  // ADD THIS
+                Log.d("ViewModel", "Returning Loaded state with nav=$latestNav")
                 DetailUiState.Loaded(schemeCode, schemeName, latestNav)
             }
             else                      -> DetailUiState.Error

@@ -104,7 +104,7 @@ fun MutualFundApp(
                                         }},
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(text = "Explore")
+                                Text(text = "Explore", color = Color.Black)
                             }
 
 
@@ -121,7 +121,7 @@ fun MutualFundApp(
                                         }},
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(text = "Watchlist")
+                                Text(text = "Watchlist", color = Color.Black)
                             }
                         }
                     }
@@ -134,17 +134,21 @@ fun MutualFundApp(
             navController = navController,
             startDestination = MutualFundAppScreen.Explore.name
         ) {
-            composable (MutualFundAppScreen.Explore.name) {
-                ExploreScreen(
-                    modifier = Modifier.padding(innerPadding),
-                    onClick = { navController.navigate(MutualFundAppScreen.Search.name) }
-                )
+            if(true){
+                composable (MutualFundAppScreen.Explore.name) {
+                    ExploreScreen(
+                        modifier = Modifier.padding(innerPadding),
+                        viewModel = exploreViewModel,
+                        onSearchClick = { navController.navigate(MutualFundAppScreen.Search.name) }
+                    )
+                }
             }
+
 
             composable (MutualFundAppScreen.AllFunds.name) {
                 ListScreen(
                     viewModel = exploreViewModel,
-                    {},
+                    { navController.navigate(MutualFundAppScreen.Analysis.name) },
                     modifier = Modifier.padding(innerPadding),
                 )
             }
@@ -158,6 +162,8 @@ fun MutualFundApp(
             composable (MutualFundAppScreen.Search.name) {
                 SearchScreen(
                     modifier = Modifier.padding(innerPadding),
+                    onClick = {}
+                    ,
                 )
             }
 
@@ -196,9 +202,12 @@ fun AppBar(
 ) {
     Column{
         TopAppBar(
-            title = { Text(currentScreen.name) },
+            title = { Text(currentScreen.name, color = Color.Black) },
             colors = TopAppBarDefaults.mediumTopAppBarColors(
-                containerColor = Color.White
+                containerColor = Color.White,
+                titleContentColor = Color.Black,
+                navigationIconContentColor = Color.Black,
+                actionIconContentColor = Color.Black
             ),
             navigationIcon = {
                 if (canNavigateBack) {

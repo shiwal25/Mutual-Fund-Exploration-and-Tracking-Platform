@@ -14,26 +14,6 @@ class MutualFundPagingSource(
     private val dao: MutualFundDAO  // Add DAO parameter
 ) : PagingSource<Int, MutualFundDTO>() {
 
-//    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MutualFundDTO> {
-//        val offset = params.key ?: 0
-//        return try {
-//            val items = apiService.getMutualFunds(
-//                limit = params.loadSize,
-//                offset = offset
-//            )
-//
-//            val entities = items.map { it.toEntity() }
-//            dao.insertFunds(entities)
-//
-//            LoadResult.Page(
-//                data = items,
-//                prevKey = if (offset == 0) null else offset - params.loadSize,
-//                nextKey = if (items.size < params.loadSize) null else offset + params.loadSize
-//            )
-//        } catch (e: Exception) {
-//            LoadResult.Error(e)
-//        }
-//    }
 override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MutualFundDTO> {
     val offset = params.key ?: 0
     return try {

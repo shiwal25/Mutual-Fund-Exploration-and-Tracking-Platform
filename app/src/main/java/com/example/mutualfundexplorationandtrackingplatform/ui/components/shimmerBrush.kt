@@ -37,7 +37,6 @@ fun shimmerBrush(): Brush {
     )
 }
 
-/** A single rectangular shimmer placeholder. */
 @Composable
 fun ShimmerBox(
     modifier: Modifier = Modifier,

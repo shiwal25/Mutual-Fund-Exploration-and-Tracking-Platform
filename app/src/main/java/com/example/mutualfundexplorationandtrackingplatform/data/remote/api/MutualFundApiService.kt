@@ -18,4 +18,9 @@ interface MutualFundApiService {
     suspend fun getFundDetails(
         @Path("scheme_code") schemeCode: Int?
     ): MutualFundResponseDTO
+
+    @GET("mf/search")
+    suspend fun getFundsByCategory(
+        @Query("q") q:String
+    ): List<MutualFundDTO>
 }

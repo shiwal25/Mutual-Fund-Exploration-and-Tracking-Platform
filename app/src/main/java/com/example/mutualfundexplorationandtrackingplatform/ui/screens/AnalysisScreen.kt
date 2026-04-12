@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mutualfundexplorationandtrackingplatform.ui.components.AnalysisStatItem
@@ -129,4 +130,12 @@ fun AnalysisScreen(
             AnalysisStatItem("NAV", navValue, Modifier.weight(1f))
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewAnalysis(){
+    AnalysisScreen(
+        "SHivam","SHivam", "25","10%", "jhdvcjsvcjvsjhcvjhsvcjhvjc"
+    )
 }
