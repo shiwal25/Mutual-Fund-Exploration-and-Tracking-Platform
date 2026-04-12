@@ -128,11 +128,11 @@ Mutual-Fund-Exploration-and-Tracking-Platform/
 │       │   │   └── WatchlistViewModel.kt
 ```
 
-### [App APK]([https://drive.google.com/file/d/1XDcQ8NCS8qV30WAuopiciG5eMqXu9o0J/view?usp=sharing])
+### [App APK](https://drive.google.com/file/d/1XDcQ8NCS8qV30WAuopiciG5eMqXu9o0J/view?usp=sharing)
 
-### [Demo Video]([https://drive.google.com/file/d/1S-XxK_SythEhiOn7OUSzyDAlwXUH5PtN/view?usp=sharing])
+### [Demo Video](https://drive.google.com/file/d/1S-XxK_SythEhiOn7OUSzyDAlwXUH5PtN/view?usp=sharing)
 
 ## NOTE
  - Since the provided APIs do not provide NAV data, I am making additional calls to get NAV data of specific mutual funds. Hence, while loading we can a shimmer for some time instead of the NAV values.
  - Since none of the APIs provide description and market size of the mutual fund, you can see a place holder for both of these with dummy values.
- - Except NAV value history, we are storing all the data in a persistant storage (Room DB), so while offline we are not able to plot the graph and get the growth value. 
+ - Except NAV value history, we are storing all the data in a persistant storage (Room DB), so while offline we are not able to plot the graph and get the growth value.
