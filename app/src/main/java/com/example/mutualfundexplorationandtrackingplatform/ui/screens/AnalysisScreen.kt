@@ -164,10 +164,32 @@ fun AnalysisScreen(
                     color = Color.Black
                 )
                 Spacer(modifier = Modifier.width(8.dp))
+                // Calculate arrow and color based on growth
+                val (growthArrow, growthColor) = remember(navData) {
+                    if (navData.size >= 2) {
+                        val firstNav = navData.lastOrNull()?.nav?.toFloatOrNull() ?: 0f
+                        val lastNav = navData.firstOrNull()?.nav?.toFloatOrNull() ?: 0f
+
+                        if (firstNav > 0) {
+                            val growth = ((lastNav - firstNav) / firstNav) * 100
+
+                            when {
+                                growth > 0.1 -> Pair("↑", Color(0xFF4CAF50))  // Positive: up arrow, green
+                                growth < -0.1 -> Pair("↓", Color(0xFFF44336)) // Negative: down arrow, red
+                                else -> Pair("→", Color.Gray)                  // Stable: right arrow, grey
+                            }
+                        } else {
+                            Pair("→", Color.Gray)
+                        }
+                    } else {
+                        Pair("→", Color.Gray)
+                    }
+                }
+
                 Text(
-                    text = "↑ $growthPercentage",
+                    text = "$growthArrow $growthPercentage",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color(0xFF4CAF50)
+                    color = growthColor
                 )
             }
 

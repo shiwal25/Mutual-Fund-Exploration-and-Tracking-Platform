@@ -19,4 +19,6 @@ interface MutualFundRepository {
     fun observeCategoryFunds(category: String): Flow<List<MutualFundDetail>>
 
     suspend fun fetchNavData(schemeCode: String, startDate: String? = null, endDate: String? = null): Result<List<NavPoint>>
+
+    suspend fun searchFunds(query: String): List<MutualFundDTO>
 }

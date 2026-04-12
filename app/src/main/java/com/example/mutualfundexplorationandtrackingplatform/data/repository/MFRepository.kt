@@ -10,6 +10,7 @@ import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.Mu
 import com.example.mutualfundexplorationandtrackingplatform.data.models.NavPoint
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.api.MutualFundApiService
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundDTO
+import com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper.toEntity
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper.toEntity2
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper.toEntityWithCategory
 import kotlinx.coroutines.flow.Flow
@@ -141,6 +142,19 @@ override suspend fun fetchAndCacheCategoryFunds(category: String): Result<List<M
             Result.failure(e)
         }
     }
+
+    override suspend fun searchFunds(query: String): List<MutualFundDTO> {
+        return try {
+            val dtos = mutualFundApiService.getFundsByCategory(query)
+            val entities = dtos.map { it.toEntity() }
+            mutualFundDAO.insertFunds(entities)
+            dtos
+        } catch (e: Exception) {
+            Log.e("MFRepository", "Error searching funds: ${e.message}", e)
+            throw e
+        }
+    }
+
 
     override fun observeCategoryFunds(category: String): Flow<List<MutualFundDetail>> =
         mutualFundDAO.observeFundsByCategory(category)

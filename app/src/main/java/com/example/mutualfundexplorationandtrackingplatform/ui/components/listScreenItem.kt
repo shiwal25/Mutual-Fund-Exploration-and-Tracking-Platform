@@ -29,12 +29,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mutualfundexplorationandtrackingplatform.ui.utils.DetailUiState
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ExploreViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+
+
+interface DetailFetchViewModel {
+    fun requestDetail(schemeCode: Int?)
+    fun getDetailFlow(schemeCode: Int?): Flow<DetailUiState>
+}
 
 @Composable
 fun listScreenItem(
     schemeCode: Int?,
     schemeName: String?,
-    viewModel: ExploreViewModel,
+    viewModel: DetailFetchViewModel,
     onClick: (Int?, String?) -> Unit,
     modifier: Modifier = Modifier
 ){

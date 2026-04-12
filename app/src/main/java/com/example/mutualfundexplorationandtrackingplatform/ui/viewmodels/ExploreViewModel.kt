@@ -7,6 +7,7 @@ import androidx.paging.cachedIn
 import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
 import com.example.mutualfundexplorationandtrackingplatform.data.models.NavPoint
 import com.example.mutualfundexplorationandtrackingplatform.data.repository.MutualFundRepository
+import com.example.mutualfundexplorationandtrackingplatform.ui.components.DetailFetchViewModel
 import com.example.mutualfundexplorationandtrackingplatform.ui.utils.DetailUiState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -31,7 +32,7 @@ sealed class CategoryUiState {
 
 class ExploreViewModel(
     private val mutualFundRepository: MutualFundRepository
-): ViewModel() {
+): ViewModel(), DetailFetchViewModel {
 
     val mutalFundPagingFlow = mutualFundRepository.mutalFundPagingFlow
         .cachedIn(viewModelScope)
@@ -125,7 +126,7 @@ class ExploreViewModel(
 
     private val inFlightJobs = ConcurrentHashMap<Int, Job>()
 
-    fun requestDetail(schemeCode: Int?) {
+    override fun requestDetail(schemeCode: Int?) {
         if (inFlightJobs.containsKey(schemeCode)) return
 
         val job = viewModelScope.launch {
@@ -138,7 +139,7 @@ class ExploreViewModel(
         inFlightJobs[schemeCode as Int] = job
     }
 
-    fun getDetailFlow(schemeCode: Int?): Flow<DetailUiState> {
+    override fun getDetailFlow(schemeCode: Int?): Flow<DetailUiState> {
         return mutualFundRepository.observeFundByschemeCode(schemeCode)
             .map { fund -> fund.toDetailUiState() }
             .catch { e ->

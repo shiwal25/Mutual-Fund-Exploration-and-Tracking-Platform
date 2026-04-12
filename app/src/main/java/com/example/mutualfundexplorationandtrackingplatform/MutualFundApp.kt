@@ -49,6 +49,7 @@ import com.example.mutualfundexplorationandtrackingplatform.ui.screens.Portfolio
 import com.example.mutualfundexplorationandtrackingplatform.ui.screens.SearchScreen
 import com.example.mutualfundexplorationandtrackingplatform.ui.screens.WatchListScreen
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ExploreViewModel
+import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.SearchViewModel
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ViewModelFactory
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.WatchlistViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -95,6 +96,10 @@ fun MutualFundApp(
     val watchListDao = app.container.watchListDao
 
     val exploreViewModel: ExploreViewModel = viewModel(
+        factory = ViewModelFactory(mutualFundRepository, watchListDao)
+    )
+
+    val searchViewModel: SearchViewModel = viewModel(
         factory = ViewModelFactory(mutualFundRepository, watchListDao)
     )
 
@@ -237,9 +242,12 @@ fun MutualFundApp(
 
             composable (MutualFundAppScreen.Search.name) {
                 SearchScreen(
+                    viewModel = searchViewModel,
                     modifier = Modifier.padding(innerPadding),
-                    onClick = {}
-                    ,
+                    onClick = { code, name ->
+                        exploreViewModel.selectFund(code, name)
+                        navController.navigate(MutualFundAppScreen.Analysis.name)
+                    }
                 )
             }
 
