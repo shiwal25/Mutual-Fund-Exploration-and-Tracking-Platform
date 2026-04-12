@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.WatchListDao
 import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
 import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.WatchList
-import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.WatchListFundCrossRef
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.watchListDataEntity.WatchListFundCrossRef
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

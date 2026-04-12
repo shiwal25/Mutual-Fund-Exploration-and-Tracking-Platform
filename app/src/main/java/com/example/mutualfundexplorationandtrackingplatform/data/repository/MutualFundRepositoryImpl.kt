@@ -4,23 +4,19 @@ import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.example.mutualfundexplorationandtrackingplatform.data.MutualFundPagingSource
+import com.example.mutualfundexplorationandtrackingplatform.data.paging.MutualFundPagingSource
 import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.MutualFundDAO
 import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
-import com.example.mutualfundexplorationandtrackingplatform.data.models.NavPoint
+import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.NavPoint
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.api.MutualFundApiService
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.MutualFundDTO
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper.toEntity
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper.toEntity2
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.mapper.toEntityWithCategory
 import kotlinx.coroutines.flow.Flow
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
-class MFRepository(private val mutualFundDAO: MutualFundDAO,
-                   private val mutualFundApiService: MutualFundApiService
+class MutualFundRepositoryImpl(private val mutualFundDAO: MutualFundDAO,
+                               private val mutualFundApiService: MutualFundApiService
 ) : MutualFundRepository {
 
     override val mutalFundPagingFlow: Flow<PagingData<MutualFundDTO>> = Pager(
@@ -86,7 +82,7 @@ class MFRepository(private val mutualFundDAO: MutualFundDAO,
         mutualFundDAO.observeFundByScheme(schemeCode)
 
 override suspend fun fetchAndCacheCategoryFunds(category: String): Result<List<MutualFundDetail>> {
-    Log.d("MFRepository", "fetchAndCacheCategoryFunds called for: $category")
+    Log.d("MutualFundRepositoryImpl", "fetchAndCacheCategoryFunds called for: $category")
     return try {
         // Map query parameter to API search term
         val searchQuery = when(category) {
@@ -98,10 +94,10 @@ override suspend fun fetchAndCacheCategoryFunds(category: String): Result<List<M
         }
 
         val dtos = mutualFundApiService.getFundsByCategory(searchQuery)
-        Log.d("MFRepository", "API returned ${dtos.size} DTOs for searchQuery: $searchQuery")
+        Log.d("MutualFundRepositoryImpl", "API returned ${dtos.size} DTOs for searchQuery: $searchQuery")
 
         if (dtos.isEmpty()) {
-            Log.d("MFRepository", "Empty result for $category, returning empty list")
+            Log.d("MutualFundRepositoryImpl", "Empty result for $category, returning empty list")
 
             return Result.success(emptyList())
         }
@@ -111,14 +107,14 @@ override suspend fun fetchAndCacheCategoryFunds(category: String): Result<List<M
 
         // Save to database
         mutualFundDAO.insertFunds(entities)
-        Log.d("MFRepository", "Inserted ${entities.size} entities to DB for category: $category")
+        Log.d("MutualFundRepositoryImpl", "Inserted ${entities.size} entities to DB for category: $category")
         // Return from DB to get consistent data
         val saved = mutualFundDAO.getFundsByCategory(category)
-        Log.d("MFRepository", "Retrieved ${saved.size} saved funds from DB for: $category")
+        Log.d("MutualFundRepositoryImpl", "Retrieved ${saved.size} saved funds from DB for: $category")
 
         Result.success(saved)
     } catch (e: Exception) {
-        Log.e("MFRepository", "Error fetching category $category: ${e.message}", e)
+        Log.e("MutualFundRepositoryImpl", "Error fetching category $category: ${e.message}", e)
 
         val cached = mutualFundDAO.getFundsByCategory(category)
         if (cached.isNotEmpty()) {
@@ -138,7 +134,7 @@ override suspend fun fetchAndCacheCategoryFunds(category: String): Result<List<M
             val response = mutualFundApiService.getNavData(schemeCode, startDate, endDate)
             Result.success(response.data)
         } catch (e: Exception) {
-            Log.e("MFRepository", "Error fetching NAV data: ${e.message}", e)
+            Log.e("MutualFundRepositoryImpl", "Error fetching NAV data: ${e.message}", e)
             Result.failure(e)
         }
     }
@@ -150,7 +146,7 @@ override suspend fun fetchAndCacheCategoryFunds(category: String): Result<List<M
             mutualFundDAO.insertFunds(entities)
             dtos
         } catch (e: Exception) {
-            Log.e("MFRepository", "Error searching funds: ${e.message}", e)
+            Log.e("MutualFundRepositoryImpl", "Error searching funds: ${e.message}", e)
             throw e
         }
     }

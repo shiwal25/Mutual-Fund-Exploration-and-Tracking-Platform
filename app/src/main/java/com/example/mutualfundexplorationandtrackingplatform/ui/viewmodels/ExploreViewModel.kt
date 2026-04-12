@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
-import com.example.mutualfundexplorationandtrackingplatform.data.models.NavPoint
+import com.example.mutualfundexplorationandtrackingplatform.data.remote.dto.NavPoint
 import com.example.mutualfundexplorationandtrackingplatform.data.repository.MutualFundRepository
 import com.example.mutualfundexplorationandtrackingplatform.ui.components.DetailFetchViewModel
 import com.example.mutualfundexplorationandtrackingplatform.ui.utils.DetailUiState
@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 

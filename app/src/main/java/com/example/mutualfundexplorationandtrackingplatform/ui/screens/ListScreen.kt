@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import com.example.mutualfundexplorationandtrackingplatform.ui.components.listScreenItem
+import com.example.mutualfundexplorationandtrackingplatform.ui.components.ListScreenItem
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ExploreViewModel
 
 @Composable
@@ -38,7 +38,7 @@ fun ListScreen(
             key      = lazyPagingItems.itemKey { it.schemeCode!! }
         ) { index ->
             val item = lazyPagingItems[index] ?: return@items
-            listScreenItem(
+            ListScreenItem(
                 schemeCode = item.schemeCode,
                 schemeName = item.schemeName,
                 viewModel = viewModel,

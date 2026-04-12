@@ -1,4 +1,4 @@
-package com.example.mutualfundexplorationandtrackingplatform.data.models
+package com.example.mutualfundexplorationandtrackingplatform.data.remote.dto
 
 data class NavDataResponse(
     val meta: MetaData,

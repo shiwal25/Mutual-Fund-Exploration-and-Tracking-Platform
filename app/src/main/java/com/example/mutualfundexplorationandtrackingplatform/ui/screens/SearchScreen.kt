@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.mutualfundexplorationandtrackingplatform.ui.components.listScreenItem
+import com.example.mutualfundexplorationandtrackingplatform.ui.components.ListScreenItem
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.SearchViewModel
 
 @Composable
@@ -118,7 +118,7 @@ fun SearchScreen(
                         key = { index -> searchResults[index].schemeCode!! }
                     ) { index ->
                         val item = searchResults[index]
-                        listScreenItem(
+                        ListScreenItem(
                             schemeCode = item.schemeCode,
                             schemeName = item.schemeName,
                             viewModel = viewModel,

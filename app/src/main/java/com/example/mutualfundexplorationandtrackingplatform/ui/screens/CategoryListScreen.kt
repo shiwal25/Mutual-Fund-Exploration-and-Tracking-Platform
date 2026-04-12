@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.mutualfundexplorationandtrackingplatform.ui.components.listScreenItem
+import com.example.mutualfundexplorationandtrackingplatform.ui.components.ListScreenItem
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.CategoryUiState
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ExploreViewModel
 
@@ -52,7 +52,7 @@ fun CategoryListScreen(
                 items = fundsList,
                 key = { fund -> fund.schemeCode ?: fund.hashCode() }
             ) { fund ->
-                listScreenItem(
+                ListScreenItem(
                     schemeCode = fund.schemeCode,
                     schemeName = fund.schemeName,
                     viewModel = viewModel,

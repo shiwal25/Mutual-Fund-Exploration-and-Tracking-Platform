@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun shimmerBrush(): Brush {
+fun ShimmerBrush(): Brush {
     val shimmerColors = listOf(
         Color(0xFFE0E0E0),
         Color(0xFFF5F5F5),
@@ -48,7 +48,7 @@ fun ShimmerBox(
             .width(width)
             .height(height)
             .background(
-                brush  = shimmerBrush(),
+                brush  = ShimmerBrush(),
                 shape  = RoundedCornerShape(4.dp)
             )
     )

@@ -8,8 +8,7 @@ import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.Mutua
 import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.WatchListDao
 import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
 import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.WatchList
-import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.WatchListFundCrossRef
-import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.WatchListWithFunds
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.watchListDataEntity.WatchListFundCrossRef
 
 @Database(entities = [MutualFundDetail::class,
     WatchList::class,

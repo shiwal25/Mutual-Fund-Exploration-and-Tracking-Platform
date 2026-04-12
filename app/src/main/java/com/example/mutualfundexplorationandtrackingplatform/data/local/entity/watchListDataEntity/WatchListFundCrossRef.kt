@@ -1,4 +1,4 @@
-package com.example.mutualfundexplorationandtrackingplatform.data.local.entity
+package com.example.mutualfundexplorationandtrackingplatform.data.local.entity.watchListDataEntity
 
 import androidx.room.Entity
 import androidx.room.Index
@@ -7,7 +7,7 @@ import androidx.room.Index
     primaryKeys = ["watchListId", "schemeCode"],
 indices = [
     Index(value = ["schemeCode"]),
-Index(value = ["watchListId"])
+    Index(value = ["watchListId"])
 ])
 data class WatchListFundCrossRef(
     val watchListId:Long,

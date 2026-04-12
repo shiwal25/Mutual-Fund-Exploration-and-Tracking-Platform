@@ -1,9 +1,10 @@
-package com.example.mutualfundexplorationandtrackingplatform.data.local.entity
+package com.example.mutualfundexplorationandtrackingplatform.data.local.entity.watchListDataEntity
 
 import androidx.room.Embedded
-import androidx.room.Entity
 import androidx.room.Junction
 import androidx.room.Relation
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.WatchList
 
 data class WatchListWithFunds(
     @Embedded val watchlist: WatchList,

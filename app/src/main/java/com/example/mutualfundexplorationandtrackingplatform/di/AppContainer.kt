@@ -1,14 +1,12 @@
 package com.example.mutualfundexplorationandtrackingplatform.di
 
 import android.content.Context
-import com.example.mutualfundexplorationandtrackingplatform.data.repository.MFRepository
+import com.example.mutualfundexplorationandtrackingplatform.data.repository.MutualFundRepositoryImpl
 import com.example.mutualfundexplorationandtrackingplatform.data.local.MutualFundDatabase
 import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.WatchListDao
 import com.example.mutualfundexplorationandtrackingplatform.data.repository.MutualFundRepository
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.api.MutualFundApiService
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -42,6 +40,6 @@ class AppDataContainer(private val context: Context) : AppContainer {
     }
 
     override val mutualFundRepository: MutualFundRepository by lazy {
-        MFRepository(database.mutualFundDAO(), retrofitService)
+        MutualFundRepositoryImpl(database.mutualFundDAO(), retrofitService)
     }
 }

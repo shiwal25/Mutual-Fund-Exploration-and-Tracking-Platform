@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mutualfundexplorationandtrackingplatform.ui.utils.DetailUiState
-import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ExploreViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 
@@ -38,7 +37,7 @@ interface DetailFetchViewModel {
 }
 
 @Composable
-fun listScreenItem(
+fun ListScreenItem(
     schemeCode: Int?,
     schemeName: String?,
     viewModel: DetailFetchViewModel,
