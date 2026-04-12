@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.androidx.paging.common)
     implementation(libs.androidx.benchmark.common)
     implementation(libs.firebase.appdistribution.gradle)
+    implementation(libs.androidx.compose.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

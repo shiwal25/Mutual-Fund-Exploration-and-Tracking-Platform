@@ -86,8 +86,8 @@ override suspend fun fetchAndCacheCategoryFunds(category: String): Result<List<M
         val searchQuery = when(category) {
             "indexfunds" -> "index"
             "bluechip" -> "bluechip"
-            "tax" -> "tax"
-            "largecap" -> "large cap"
+            "taxsaver" -> "tax"
+            "largecap" -> "large"
             else -> category
         }
 

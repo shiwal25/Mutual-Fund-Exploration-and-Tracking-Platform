@@ -3,6 +3,7 @@ package com.example.mutualfundexplorationandtrackingplatform.di
 import android.content.Context
 import com.example.mutualfundexplorationandtrackingplatform.data.repository.MFRepository
 import com.example.mutualfundexplorationandtrackingplatform.data.local.MutualFundDatabase
+import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.WatchListDao
 import com.example.mutualfundexplorationandtrackingplatform.data.repository.MutualFundRepository
 import com.example.mutualfundexplorationandtrackingplatform.data.remote.api.MutualFundApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -13,6 +14,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 interface AppContainer {
     val mutualFundRepository: MutualFundRepository
+    val watchListDao: WatchListDao
+
 }
 
 class AppDataContainer(private val context: Context) : AppContainer {
@@ -29,7 +32,16 @@ class AppDataContainer(private val context: Context) : AppContainer {
         retrofit.create(MutualFundApiService::class.java)
     }
 
+    private val database: MutualFundDatabase by lazy {
+        MutualFundDatabase.getDatabase(context)
+    }
+
+    // 3. Expose the WatchListDao
+    override val watchListDao: WatchListDao by lazy {
+        database.watchListDao() // Note: Ensure this matches the exact function name in your MutualFundDatabase class!
+    }
+
     override val mutualFundRepository: MutualFundRepository by lazy {
-        MFRepository(MutualFundDatabase.getDatabase(context).mutualFundDAO(), retrofitService)
+        MFRepository(database.mutualFundDAO(), retrofitService)
     }
 }

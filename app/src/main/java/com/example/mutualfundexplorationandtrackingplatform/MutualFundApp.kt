@@ -42,6 +42,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.WatchListDao
 import com.example.mutualfundexplorationandtrackingplatform.ui.components.ViewAllButton
 import com.example.mutualfundexplorationandtrackingplatform.ui.screens.AnalysisScreen
 import com.example.mutualfundexplorationandtrackingplatform.ui.screens.CategoryListScreen
@@ -51,6 +52,7 @@ import com.example.mutualfundexplorationandtrackingplatform.ui.screens.SearchScr
 import com.example.mutualfundexplorationandtrackingplatform.ui.screens.WatchListScreen
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ExploreViewModel
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ViewModelFactory
+import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.WatchlistViewModel
 
 enum class MutualFundAppScreen (val route: String){
     Explore("explore"),
@@ -87,9 +89,14 @@ fun MutualFundApp(
     val context = LocalContext.current
     val app = context.applicationContext as MutualFundApplication
     val mutualFundRepository = app.container.mutualFundRepository
+    val watchListDao = app.container.watchListDao
 
     val exploreViewModel: ExploreViewModel = viewModel(
-        factory = ViewModelFactory(mutualFundRepository)
+        factory = ViewModelFactory(mutualFundRepository, watchListDao)
+    )
+
+    val watchlistViewModel: WatchlistViewModel = viewModel(
+        factory = ViewModelFactory(mutualFundRepository, watchListDao)
     )
 
     Scaffold(
@@ -207,6 +214,7 @@ fun MutualFundApp(
 
             composable (MutualFundAppScreen.Analysis.name) {
                 AnalysisScreen(
+                    watchlistViewModel = watchlistViewModel,
                     viewModel= exploreViewModel,
                     modifier = Modifier.padding(innerPadding),
                     showBottomSheet = showBottomSheet,

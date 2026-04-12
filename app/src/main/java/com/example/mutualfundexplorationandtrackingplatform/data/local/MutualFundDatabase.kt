@@ -5,12 +5,19 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.MutualFundDAO
+import com.example.mutualfundexplorationandtrackingplatform.data.local.dao.WatchListDao
 import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.MutualFundDetail
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.WatchList
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.WatchListFundCrossRef
+import com.example.mutualfundexplorationandtrackingplatform.data.local.entity.WatchListWithFunds
 
-@Database(entities = [MutualFundDetail::class,],
-    version = 2, exportSchema = false)
+@Database(entities = [MutualFundDetail::class,
+    WatchList::class,
+    WatchListFundCrossRef::class],
+    version = 3, exportSchema = false)
 abstract class MutualFundDatabase : RoomDatabase() {
     abstract fun mutualFundDAO(): MutualFundDAO
+    abstract fun watchListDao(): WatchListDao
 
     companion object{
         @Volatile

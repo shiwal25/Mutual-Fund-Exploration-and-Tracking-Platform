@@ -15,9 +15,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -42,11 +45,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mutualfundexplorationandtrackingplatform.ui.components.AnalysisStatItem
 import com.example.mutualfundexplorationandtrackingplatform.ui.utils.DetailUiState
 import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.ExploreViewModel
+import com.example.mutualfundexplorationandtrackingplatform.ui.viewmodels.WatchlistViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalysisScreen(
     viewModel: ExploreViewModel,
+    watchlistViewModel: WatchlistViewModel,
     modifier: Modifier = Modifier,
     showBottomSheet:Boolean,
     onDismissBottomSheet: () -> Unit
@@ -190,12 +195,23 @@ fun AnalysisScreen(
     }
 
     if (showBottomSheet) {
+        var newPortfolioName by remember { mutableStateOf("") }
+
+        // Collect all watchlists to display
+        val watchlists by watchlistViewModel.allWatchlists.collectAsStateWithLifecycle()
+
+        // Collect IDs of watchlists that already contain this specific fund
+        val watchlistsContainingFund by remember(schemeCode) {
+            watchlistViewModel.getWatchlistsForFund(schemeCode)
+        }.collectAsStateWithLifecycle(initialValue = emptyList())
+
         androidx.compose.material3.ModalBottomSheet(
             onDismissRequest = onDismissBottomSheet,
             containerColor = Color.White
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = "Add to Portfolio",
+                Text(
+                    text = "Add to Portfolio",
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                     color = Color.Black,
                     modifier = Modifier.padding(4.dp)
@@ -207,29 +223,77 @@ fun AnalysisScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     OutlinedTextField(
-                        value = "",
-                        onValueChange = { },
+                        value = newPortfolioName,
+                        onValueChange = { newPortfolioName = it },
                         modifier = Modifier
                             .weight(1f)
                             .padding(8.dp),
                         shape = RoundedCornerShape(8.dp),
-                        placeholder = {
-                            Text("New Portfolio Name...")
-                        }
+                        singleLine = true,
+                        placeholder = { Text("New Portfolio Name...") }
                     )
 
                     OutlinedButton(
-                        onClick = {},
+                        onClick = {
+                            if (newPortfolioName.isNotBlank()) {
+                                watchlistViewModel.addWatchlist(newPortfolioName)
+                                newPortfolioName = "" // Clear input after adding
+                            }
+                        },
                         shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .padding(end = 8.dp)
+                        modifier = Modifier.padding(end = 8.dp)
                     ) {
                         Text("Add")
                     }
                 }
 
-                HorizontalDivider(thickness = 2.dp, color = Color.Black)
+                HorizontalDivider(thickness = 2.dp, color = Color.Black, modifier = Modifier.padding(vertical = 8.dp))
 
+                // Scrollable list of watchlists
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 32.dp) // Extra padding for bottom sheet safety
+                ) {
+                    items(watchlists, key = { it.watchListId }) { watchlist ->
+                        val isChecked = watchlistsContainingFund.contains(watchlist.watchListId)
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    if (schemeCode != null) {
+                                        watchlistViewModel.toggleFundInWatchlist(
+                                            watchlistId = watchlist.watchListId,
+                                            schemeCode = schemeCode,
+                                            isChecked = !isChecked // Toggle state
+                                        )
+                                    }
+                                }
+                                .padding(vertical = 8.dp, horizontal = 4.dp)
+                        ) {
+                            Checkbox(
+                                checked = isChecked,
+                                onCheckedChange = { checked ->
+                                    if (schemeCode != null) {
+                                        watchlistViewModel.toggleFundInWatchlist(
+                                            watchlistId = watchlist.watchListId,
+                                            schemeCode = schemeCode,
+                                            isChecked = checked
+                                        )
+                                    }
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = watchlist.name,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.Black
+                            )
+                        }
+                    }
+                }
             }
         }
     }

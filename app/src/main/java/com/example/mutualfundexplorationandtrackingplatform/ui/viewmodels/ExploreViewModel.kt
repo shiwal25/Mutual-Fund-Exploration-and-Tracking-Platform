@@ -53,7 +53,7 @@ class ExploreViewModel(
     private fun loadAllCategories() {
         loadCategory("Index Funds", _indexFundsState)
         loadCategory("BlueChip", _bluechipFundsState)
-        loadCategory("Tax Savers (ELSS)", _taxFundsState)
+        loadCategory("TAX SAVER (ELSS)", _taxFundsState)
         loadCategory("Large Cap", _largeCapFundsState)
     }
 
